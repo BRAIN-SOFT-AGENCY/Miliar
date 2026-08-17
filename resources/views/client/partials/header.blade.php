@@ -10,7 +10,7 @@
                   من نحن</a></li>
 
               <li><a href="{{ route('client.contact') }}"><i class="icon-mail"></i>
-                  التواصل معنا</a></li>
+                  تواصل معنا</a></li>
 
 
             </ul>
@@ -31,7 +31,8 @@
                   <div class="ltn__social-media">
                     <ul>
                       <li>
-                        <?php
+                      <li>
+                        <!--?php
 // تحديد الإعدادات المحلية للغة العربية والمنطقة الزمنية
 $locale = 'ar_SA';
 $timezone = 'Asia/Riyadh';
@@ -48,24 +49,44 @@ $formatter = new IntlDateFormatter(
 
 // طباعة التاريخ الحالي
 echo $formatter->format(new DateTime());
-?>
-                      </li>
-                      <li><a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
-                      <li><a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                      </li>
+?-->
+                        @php
+                          $timezone = 'Asia/Riyadh';
+                          $locale = 'ar_SA@calendar=islamic';
 
-                      <li><a href="#" title="Instagram"><i class="fab fa-instagram"></i></a></li>
-                      <li><a href="#" title="Dribbble"><i class="fab fa-dribbble"></i></a>
+                          $date = new DateTime('now', new DateTimeZone($timezone));
+
+                          $formatter = new IntlDateFormatter(
+                            $locale,
+                            IntlDateFormatter::FULL,
+                            IntlDateFormatter::NONE,
+                            $timezone,
+                            IntlDateFormatter::TRADITIONAL,
+                            'EEEE، d MMMM yyyy'
+                          );
+
+                          $hijriDate = $formatter->format($date);
+                        @endphp
+
+                        {{ $hijriDate }} هـ
                       </li>
-                    </ul>
-                  </div>
+                </li>
+                <li><a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+                <li><a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                </li>
+
+                <li><a href="#" title="Instagram"><i class="fab fa-instagram"></i></a></li>
+                <li><a href="#" title="Dribbble"><i class="fab fa-dribbble"></i></a>
                 </li>
               </ul>
             </div>
+            </li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
+  </div>
   </div>
   <!-- ltn__header-top-area end -->
   <!-- ltn__header-middle-area start -->
@@ -126,7 +147,7 @@ echo $formatter->format(new DateTime());
               <li class="d-lg-none">
                 <!-- header-search-1 -->
                 <div class="header-search-wrap">
-                
+
                   <div class="header-search-1-form">
                     <form id="#" method="get" action="#">
                       <input type="text" name="search" value="" placeholder="Search here..." />
