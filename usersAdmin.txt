@@ -1,0 +1,13 @@
+
+******************** super admin **********************
+/////////////// compte 1 /////////////// 
+email: Shourouk.MiliarAdmin@miliar.org
+pwd: Miliar/AD1@20*26
+
+/////////////// compte 2 /////////////// 
+email: Ihab.MilAd@miliar.org
+pwd: Miliar/AD2@20*26
+
+******************** editor **********************
+email: MiliarEdit.Shourouk@miliar.org
+pwd: Editor/editor@20*26

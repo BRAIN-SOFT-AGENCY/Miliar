@@ -1,0 +1,38 @@
+les etapes pour créer la base de donnée en laravel:
+php my admin 
+creer la nom du base avec configuration si on arab ut8 general ci
+creer avec sql create table ...
+insert into table ...
+
+puis configurer votre projet allez chez .env 
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=bonyen_db
+DB_USERNAME=root
+DB_PASSWORD=root
+puis dans cmd commande 
+php artisan config:clear
+
+
+Créer Model Banner
+php artisan make:model Banner
+
+
+modifier le contenue du model comme ca 
+<?php
+
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+
+class Banner extends Model
+{
+    protected $table = 'banner';
+    protected $primaryKey = 'bannerID';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'bannerPicture',
+        'bannerName'
+    ];
+}
