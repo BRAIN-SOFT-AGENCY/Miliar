@@ -53,7 +53,7 @@
                       <img id="previewImage" src="{{ asset('includesAdmin/img/books/default.jpg') }}"
                         style="width:150px;height:150px;margin-bottom:10px">
 
-                        <input type="file" name="Image" class="form-control" onchange="preview(event)"
+                      <input type="file" name="Image" class="form-control" onchange="preview(event)"
                         accept=".jpg,.jpeg,.png,.gif,.webp,.avif,image/jpeg,image/png,image/gif,image/webp,image/avif">
 
                     </div>
@@ -78,16 +78,16 @@
                     </div>
 
                     <!--div class="form-group">
-                                        <label>المترجم</label>
-                                        <select name="translatorID" class="form-control" required>
-                                          <option value="">-- اختر المترجم --</option>
-                                          @foreach($translators as $translator)
-                                            <option value="{{ $translator->translatorID }}">
-                                              {{ $translator->translatorfirstName }} {{ $translator->translatorLastName }}
-                                            </option>
-                                          @endforeach
-                                        </select>
-                                      </div-->
+                                          <label>المترجم</label>
+                                          <select name="translatorID" class="form-control" required>
+                                            <option value="">-- اختر المترجم --</option>
+                                            @foreach($translators as $translator)
+                                              <option value="{{ $translator->translatorID }}">
+                                                {{ $translator->translatorfirstName }} {{ $translator->translatorLastName }}
+                                              </option>
+                                            @endforeach
+                                          </select>
+                                        </div-->
                     <input type="hidden" name="type" value="2">
                     <input type="hidden" name="status" value="-3">
                     <input type="hidden" name="isbanner" value="0">
@@ -118,7 +118,7 @@
 
                 <div class="form-group">
                   <label>الدراسة</label>
-                  <textarea id="editor" name="article" ></textarea>
+                  <textarea id="editor" name="article"></textarea>
                 </div>
 
                 <button type="button" id="generateSummary" class="btn btn-primary">
@@ -222,6 +222,10 @@
                 <div class="form-group">
                   <label>ملخص الدراسة</label>
                   <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label>مقتطف </label>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control" required></textarea>
                 </div>
               </div>
 

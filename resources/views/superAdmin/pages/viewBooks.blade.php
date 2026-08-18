@@ -51,11 +51,11 @@
 
 
                     <img src="{{ asset('includesAdmin/img/books/' . $book->Image) }}" style="
-            width:220px;
-            height:220px;
-            object-fit:cover;
-            border-radius:10px;
-            ">
+              width:220px;
+              height:220px;
+              object-fit:cover;
+              border-radius:10px;
+              ">
 
 
                   </div>
@@ -204,10 +204,10 @@
 
 
                 <div class="well" style="
-            min-height:200px;
-            line-height:2;
-            text-align:right;
-            ">
+              min-height:200px;
+              line-height:2;
+              text-align:right;
+              ">
 
                   {!! $book->article !!}
 
@@ -231,9 +231,9 @@
 
 
                 <div class="well" style="
-            line-height:2;
-            text-align:right;
-            ">
+              line-height:2;
+              text-align:right;
+              ">
 
                   {{ $book->ResumeLivre }}
 
@@ -241,7 +241,20 @@
 
 
               </div>
+              <div class="form-group">
 
+                <label>
+                  مقتطف :
+                </label>
+
+
+                <div class="well" style="line-height:2;text-align:right">
+
+                  {{ $book->extrait }}
+
+                </div>
+
+              </div>
 
 
 
@@ -296,10 +309,10 @@
 
               <!--a href="{{ route('superAdmin.pages.books') }}" class="btn btn-default btn-lg">
 
-                <i class="fa fa-arrow-right"></i>
-                رجوع
+                  <i class="fa fa-arrow-right"></i>
+                  رجوع
 
-              </a-->
+                </a-->
 
 
 

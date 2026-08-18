@@ -83,12 +83,12 @@
                   <div class="form-group">
                     <label>
                       المترجم : {{ 
-                                                    $book->translator->translatorfirstName ?? ''
-                                                }}
+                                                      $book->translator->translatorfirstName ?? ''
+                                                  }}
 
                       {{ 
-                                                    $book->translator->translatorLastName ?? ''
-                                                }}
+                                                      $book->translator->translatorLastName ?? ''
+                                                  }}
                     </label>
 
 
@@ -171,8 +171,21 @@
                 </div>
 
               </div>
+              <div class="form-group">
+
+                <label>
+                  مقتطف :
+                </label>
 
 
+                <div class="well" style="line-height:2;text-align:right">
+
+                  {{ $book->extrait }}
+
+                </div>
+
+              </div>
+            
 
             </div>
 
@@ -183,10 +196,10 @@
 
               <!--a href="{{ route('superAdmin.pages.article') }}" class="btn btn-default btn-lg">
 
-                <i class="fa fa-arrow-right"></i>
-                رجوع
+                  <i class="fa fa-arrow-right"></i>
+                  رجوع
 
-              </a-->
+                </a-->
 
 
 

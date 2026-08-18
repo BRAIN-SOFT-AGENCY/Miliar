@@ -78,7 +78,8 @@ class TranslatorController extends Controller
             'type' => 'required',
             'status' => 'required',
             'isbanner' => 'required',
-
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
         ]);
 
         // Upload image
@@ -106,6 +107,7 @@ class TranslatorController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
+        $data['nbViews'] = 0;
 
         Book::create($data);
 
@@ -164,7 +166,8 @@ class TranslatorController extends Controller
             'article' => 'nullable',
             'status' => 'required',
             'isbanner' => 'required',
-
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
         ]);
 
         // Upload image
@@ -203,6 +206,7 @@ class TranslatorController extends Controller
 
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
+        $data['nbViews'] = 0;
 
         Book::create($data);
 
@@ -261,6 +265,8 @@ class TranslatorController extends Controller
             'type' => 'required',
             'status' => 'required',
             'isbanner' => 'required',
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
 
         ]);
 
@@ -289,6 +295,7 @@ class TranslatorController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
+        $data['nbViews'] = 0;
 
         Book::create($data);
 
@@ -474,6 +481,8 @@ class TranslatorController extends Controller
             'article' => 'nullable',
             'status' => 'required',
             'isbanner' => 'required',
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
         ]);
 
         // IMAGE
@@ -550,6 +559,8 @@ class TranslatorController extends Controller
             'article' => 'nullable',
             'status' => 'required',
             'isbanner' => 'required',
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
         ]);
 
         // IMAGE
@@ -626,6 +637,8 @@ class TranslatorController extends Controller
             'article' => 'nullable',
             'status' => 'required',
             'isbanner' => 'required',
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
         ]);
 
         // IMAGE

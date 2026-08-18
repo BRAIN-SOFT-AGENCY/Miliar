@@ -109,6 +109,7 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'extrait' => 'nullable',
 
         ]);
 
@@ -137,6 +138,7 @@ class AdminController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
+        $data['nbViews'] = 0;
 
         Book::create($data);
 
@@ -306,7 +308,7 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
-
+            'extrait' => 'nullable',
         ]);
 
         // Upload image
@@ -372,6 +374,7 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'extrait' => 'nullable',
 
         ]);
 
@@ -411,6 +414,7 @@ class AdminController extends Controller
 
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
+        $data['nbViews'] = 0;
 
         Book::create($data);
 
@@ -446,7 +450,7 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
-
+            'extrait' => 'nullable',
         ]);
 
         // Upload image
@@ -474,6 +478,7 @@ class AdminController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
+        $data['nbViews'] = 0;
 
         Book::create($data);
 
@@ -707,6 +712,7 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'extrait' => 'nullable',
 
         ]);
 
@@ -735,6 +741,7 @@ class AdminController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
+        $data['nbViews'] = 0;
 
         Book::create($data);
 
@@ -1095,6 +1102,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'extrait' => 'nullable',
+
         ]);
 
         // IMAGE
@@ -1171,6 +1180,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'extrait' => 'nullable',
+
         ]);
 
         // IMAGE
@@ -1251,6 +1262,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'extrait' => 'nullable',
+
         ]);
 
         // IMAGE

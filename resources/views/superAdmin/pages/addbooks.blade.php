@@ -221,48 +221,52 @@
                   <label>ملخص الكتاب </label>
                   <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control" required></textarea>
                 </div>
-
                 <div class="form-group">
-                  <label>رفع ملف PDF</label>
-                  <input type="file" name="pdf_file" class="form-control">
+                  <label>مقتطف </label>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control" required></textarea>
                 </div>
-
               </div>
-
-              <div class="box-footer text-center">
-
-                <button type="submit" class="btn btn-success btn-lg">
-                  <i class="fa fa-save"></i> حفظ الكتاب
-                </button>
-
-                <a href="#" class="btn btn-default btn-lg">
-                  <i class="fa fa-arrow-right"></i> رجوع
-                </a>
-
+              <div class="form-group">
+                <label>رفع ملف PDF</label>
+                <input type="file" name="pdf_file" class="form-control">
               </div>
-
-            </form>
 
           </div>
+
+          <div class="box-footer text-center">
+
+            <button type="submit" class="btn btn-success btn-lg">
+              <i class="fa fa-save"></i> حفظ الكتاب
+            </button>
+
+            <a href="#" class="btn btn-default btn-lg">
+              <i class="fa fa-arrow-right"></i> رجوع
+            </a>
+
+          </div>
+
+          </form>
+
         </div>
       </div>
+  </div>
 
-    </section>
-    <script>
+  </section>
+  <script>
 
-      function preview(event) {
-        var reader = new FileReader();
+    function preview(event) {
+      var reader = new FileReader();
 
-        reader.onload = function () {
-          var output = document.getElementById('previewImage');
-          output.src = reader.result;
-        };
+      reader.onload = function () {
+        var output = document.getElementById('previewImage');
+        output.src = reader.result;
+      };
 
-        reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(event.target.files[0]);
 
-      }
+    }
 
-    </script>
+  </script>
 
   </div>
 

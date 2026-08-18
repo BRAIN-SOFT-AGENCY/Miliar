@@ -234,7 +234,11 @@
                   <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control"
                     required>{{ $book->ResumeLivre }}</textarea>
                 </div>
-
+                <div class="form-group">
+                  <label>مقتطف </label>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control"
+                    required>{{ $book->extrait }}</textarea>
+                </div>
 
                 <div class="form-group">
                   <label>رفع ملف PDF</label>

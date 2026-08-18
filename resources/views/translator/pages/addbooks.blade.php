@@ -78,16 +78,16 @@
                     </div>
 
                     <!--div class="form-group">
-                                                      <label>المترجم</label>
-                                                      <select name="translatorID" class="form-control" required>
-                                                        <option value="">-- اختر المترجم --</option>
-                                                        @foreach($translators as $translator)
-                                                          <option value="{{ $translator->translatorID }}">
-                                                            {{ $translator->translatorfirstName }} {{ $translator->translatorLastName }}
-                                                          </option>
-                                                        @endforeach
-                                                      </select>
-                                                    </div-->
+                                                        <label>المترجم</label>
+                                                        <select name="translatorID" class="form-control" required>
+                                                          <option value="">-- اختر المترجم --</option>
+                                                          @foreach($translators as $translator)
+                                                            <option value="{{ $translator->translatorID }}">
+                                                              {{ $translator->translatorfirstName }} {{ $translator->translatorLastName }}
+                                                            </option>
+                                                          @endforeach
+                                                        </select>
+                                                      </div-->
                     <input type="hidden" name="type" value="1">
                     <input type="hidden" name="status" value="-3">
                     <input type="hidden" name="isbanner" value="0">
@@ -220,6 +220,10 @@
                 <div class="form-group">
                   <label>ملخص الكتاب </label>
                   <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label>مقتطف </label>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control" required></textarea>
                 </div>
                 <div class="form-group">
                   <label>رفع ملف PDF</label>

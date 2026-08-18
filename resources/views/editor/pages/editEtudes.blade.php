@@ -54,7 +54,7 @@
                       <img id="previewImage" src="{{ asset('includesAdmin/img/books/' . $book->Image) }}"
                         style="width:150px;height:150px;margin-bottom:10px">
 
-                        <input type="file" name="Image" class="form-control" onchange="preview(event)"
+                      <input type="file" name="Image" class="form-control" onchange="preview(event)"
                         accept=".jpg,.jpeg,.png,.gif,.webp,.avif,image/jpeg,image/png,image/gif,image/webp,image/avif">
 
                       <p style="margin-top:10px;color:gray">
@@ -223,8 +223,13 @@
                 </style>
                 <div class="form-group">
                   <label>ملخص الدراسة</label>
-                  <textarea id="ResumeLivre" name="ResumeLivre" rows="4"
-                    class="form-control" required>{{ $book->ResumeLivre }}</textarea>
+                  <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control"
+                    required>{{ $book->ResumeLivre }}</textarea>
+                </div>
+                <div class="form-group">
+                  <label>مقتطف </label>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control"
+                    >{{ $book->extrait }}</textarea>
                 </div>
               </div>
 
@@ -232,7 +237,7 @@
               <div class="box-footer text-center">
 
                 <button type="submit" class="btn btn-success btn-lg">
-                  <i class="fa fa-save"></i>  حفظ المسودة
+                  <i class="fa fa-save"></i> حفظ المسودة
                 </button>
 
                 <a href="{{ route('translator.pages.books') }}" class="btn btn-default btn-lg">

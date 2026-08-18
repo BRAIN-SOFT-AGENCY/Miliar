@@ -224,10 +224,20 @@
                 </style>
                 <div class="form-group">
                   <label>ملخص المقال</label>
-                  <textarea id="ResumeLivre" name="ResumeLivre" rows="4"
-                    class="form-control" required>{{ $book->ResumeLivre }}</textarea>
+                  <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control"
+                    required>{{ $book->ResumeLivre }}</textarea>
+                </div>
+                <div class="form-group">
+                  <label>ملخص </label>
+                  <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control"
+                    required>{{ $book->ResumeLivre }}</textarea>
                 </div>
 
+                <div class="form-group">
+                  <label>مقتطف </label>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control"
+                    >{{ $book->extrait }}</textarea>
+                </div>
               </div>
 
 

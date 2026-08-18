@@ -86,6 +86,8 @@ class EditorController extends Controller
             'article' => 'nullable',
             'status' => 'required',
             'isbanner' => 'required',
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
         ]);
 
         // IMAGE
@@ -154,6 +156,8 @@ class EditorController extends Controller
             'article' => 'nullable',
             'status' => 'required',
             'isbanner' => 'required',
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
         ]);
 
         // IMAGE
@@ -233,6 +237,8 @@ class EditorController extends Controller
             'article' => 'nullable',
             'status' => 'required',
             'isbanner' => 'required',
+            'nbViews' => 'nullable',
+            'extrait' => 'nullable',
         ]);
 
         // IMAGE

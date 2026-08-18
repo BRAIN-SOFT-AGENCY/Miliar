@@ -53,7 +53,7 @@
                       <img id="previewImage" src="{{ asset('includesAdmin/img/books/default.jpg') }}"
                         style="width:150px;height:150px;margin-bottom:10px">
 
-                        <input type="file" name="Image" class="form-control" onchange="preview(event)"
+                      <input type="file" name="Image" class="form-control" onchange="preview(event)"
                         accept=".jpg,.jpeg,.png,.gif,.webp,.avif,image/jpeg,image/png,image/gif,image/webp,image/avif">
 
                     </div>
@@ -214,44 +214,48 @@
                   <label>ملخص المقال</label>
                   <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control" required></textarea>
                 </div>
-
-
+                <div class="form-group">
+                  <label>مقتطف </label>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control" required></textarea>
+                </div>
               </div>
-
-              <div class="box-footer text-center">
-
-                <button type="submit" class="btn btn-success btn-lg">
-                  <i class="fa fa-save"></i> حفظ المقال
-                </button>
-
-                <a href="#" class="btn btn-default btn-lg">
-                  <i class="fa fa-arrow-right"></i> رجوع
-                </a>
-
-              </div>
-
-            </form>
 
           </div>
+
+          <div class="box-footer text-center">
+
+            <button type="submit" class="btn btn-success btn-lg">
+              <i class="fa fa-save"></i> حفظ المقال
+            </button>
+
+            <a href="#" class="btn btn-default btn-lg">
+              <i class="fa fa-arrow-right"></i> رجوع
+            </a>
+
+          </div>
+
+          </form>
+
         </div>
       </div>
+  </div>
 
-    </section>
-    <script>
+  </section>
+  <script>
 
-      function preview(event) {
-        var reader = new FileReader();
+    function preview(event) {
+      var reader = new FileReader();
 
-        reader.onload = function () {
-          var output = document.getElementById('previewImage');
-          output.src = reader.result;
-        };
+      reader.onload = function () {
+        var output = document.getElementById('previewImage');
+        output.src = reader.result;
+      };
 
-        reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(event.target.files[0]);
 
-      }
+    }
 
-    </script>
+  </script>
 
   </div>
 

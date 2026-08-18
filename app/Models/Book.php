@@ -28,7 +28,8 @@ class Book extends Model
         'type',
         'status',
         'isbanner',
-        'nbViews'
+        'nbViews',
+        'extrait',
     ];
     public function category()
     {

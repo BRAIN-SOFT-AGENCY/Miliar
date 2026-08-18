@@ -162,10 +162,10 @@
 
 
                 <div class="well" style="
-          line-height:2;
-          text-align:right;
-          min-height:200px;
-          ">
+            line-height:2;
+            text-align:right;
+            min-height:200px;
+            ">
 
                   {!! $book->article !!}
 
@@ -188,9 +188,9 @@
 
 
                 <div class="well" style="
-          line-height:2;
-          text-align:right;
-          ">
+            line-height:2;
+            text-align:right;
+            ">
 
                   {{ $book->ResumeLivre }}
 
@@ -199,7 +199,20 @@
 
               </div>
 
+              <div class="form-group">
 
+                <label>
+                  مقتطف :
+                </label>
+
+
+                <div class="well" style="line-height:2;text-align:right">
+
+                  {{ $book->extrait }}
+
+                </div>
+
+              </div>
 
             </div>
 
@@ -210,10 +223,10 @@
 
               <!--a href="{{ route('superAdmin.pages.etudes') }}" class="btn btn-default btn-lg">
 
-                <i class="fa fa-arrow-right"></i>
-                رجوع
+                  <i class="fa fa-arrow-right"></i>
+                  رجوع
 
-              </a-->
+                </a-->
 
 
 

@@ -97,8 +97,8 @@
                         @endforeach
                       </select>
                     </div>
-					  
-					  <div class="form-group">
+
+                    <div class="form-group">
                       <label>المترجم</label>
                       <select name="translatorID" class="form-control" required>
                         <option value="">-- اختر المترجم --</option>
@@ -109,7 +109,7 @@
                         @endforeach
                       </select>
                     </div>
-                    
+
 
                     <div class="form-group">
                       <label>المصدر </label>
@@ -118,9 +118,9 @@
                     <?php  if (isset($_GET['link'])) { ?>
 
                     <input type="hidden" name="link" value="{{ $_GET['link'] }}">
-                    <?php }else{
-                      
-                    } ?>
+                    <?php } else {
+
+  } ?>
                     <div class="form-group">
                       <label>تاريخ الإصدار</label>
                       <input type="date" name="DateSortie" class="form-control" value="{{ $book->DateSortie }}">
@@ -240,37 +240,42 @@
                   <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control"
                     required>{{ $book->ResumeLivre }}</textarea>
                 </div>
-
+                <div class="form-group">
+                  <label>مقتطف </label>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control"
+                    required>{{ $book->extrait }}</textarea>
+                </div>
               </div>
+          </div>
 
 
-              <div class="box-footer text-center">
+          <div class="box-footer text-center">
 
-                <button type="submit" class="btn btn-success btn-lg">
-                  <i class="fa fa-save"></i> حفظ المسودة
-                </button>
+            <button type="submit" class="btn btn-success btn-lg">
+              <i class="fa fa-save"></i> حفظ المسودة
+            </button>
 
 
-
-              </div>
-
-            </form>
 
           </div>
+
+          </form>
+
         </div>
       </div>
+  </div>
 
-    </section>
-    <script>
-      function preview(event) {
-        var reader = new FileReader();
-        reader.onload = function () {
-          var output = document.getElementById('previewImage');
-          output.src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-      }
-    </script>
+  </section>
+  <script>
+    function preview(event) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var output = document.getElementById('previewImage');
+        output.src = reader.result;
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  </script>
 
   </div>
 
