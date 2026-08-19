@@ -546,16 +546,20 @@ class AdminController extends Controller
                 'translatorID',
                 'type',
                 'isbanner',
+                'conversation',
+                'selection',
             ])
             ->with(['category', 'translator'])
             ->get();
 
         $countBooks = Book::where('isbanner', 1)->count();
+        $countconversation = Book::where('conversation', 1)->count();
+        $countselection = Book::where('selection', 1)->count();
 
-        return view('superAdmin.pages.allBooks', compact('books', 'countBooks'));
+        return view('superAdmin.pages.allBooks', compact('books', 'countBooks', 'countconversation', 'countselection'));
     }
 
-    public function toggleBanner(Request $request)
+    public function toggleBookOption(Request $request)
     {
         $book = Book::find($request->booksID);
 
@@ -566,32 +570,93 @@ class AdminController extends Controller
             ], 404);
         }
 
-        // Si on veut activer le banner
-        if ((int) $request->isbanner === 1) {
+        $field = $request->field;
+        $value = (int) $request->value;
+
+        // Les seuls champs autorisés
+        $allowedFields = [
+            'isbanner',
+            'conversation',
+            'selection'
+        ];
+
+        if (!in_array($field, $allowedFields)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الحقل غير صالح'
+            ], 400);
+        }
+
+        /*
+         * Limite du banner = 5
+         */
+        if ($field == 'isbanner' && $value == 1) {
 
             $countBooks = Book::where('isbanner', 1)->count();
 
-            // Limite maximale = 5
             if ($countBooks >= 5) {
 
                 return response()->json([
                     'success' => false,
                     'limit' => true,
+                    'field' => $field,
                     'message' => 'لقد قمت بإضافة 5 بانرات بالفعل، وهذا هو الحد الأقصى. يرجى حذف أحد البانرات أولاً حتى تتمكن من إضافة بانر جديد.'
                 ]);
             }
         }
 
-        // Activation ou désactivation
-        $book->isbanner = (int) $request->isbanner;
+        /*
+         * Limite conversation = 5
+         */
+        if ($field == 'conversation' && $value == 1) {
+
+            $countconversation = Book::where('conversation', 1)->count();
+
+            if ($countconversation >= 5) {
+
+                return response()->json([
+                    'success' => false,
+                    'limit' => true,
+                    'field' => $field,
+                    'message' => 'لقد قمت بإضافة 5 كتب للمحادثة بالفعل، وهذا هو الحد الأقصى. يرجى إلغاء أحدها أولاً حتى تتمكن من إضافة كتاب جديد.'
+                ]);
+            }
+        }
+
+        /*
+         * Limite selection = 5
+         */
+        if ($field == 'selection' && $value == 1) {
+
+            $countselection = Book::where('selection', 1)->count();
+
+            if ($countselection >= 5) {
+
+                return response()->json([
+                    'success' => false,
+                    'limit' => true,
+                    'field' => $field,
+                    'message' => 'لقد قمت بإضافة 5 كتب للاختيار بالفعل، وهذا هو الحد الأقصى. يرجى إلغاء أحدها أولاً حتى تتمكن من إضافة كتاب جديد.'
+                ]);
+            }
+        }
+
+        // Modifier uniquement le champ demandé
+        $book->$field = $value;
         $book->save();
 
+        // Compteurs
         $countBooks = Book::where('isbanner', 1)->count();
+        $countconversation = Book::where('conversation', 1)->count();
+        $countselection = Book::where('selection', 1)->count();
 
         return response()->json([
             'success' => true,
-            'isbanner' => $book->isbanner,
-            'countBooks' => $countBooks
+            'field' => $field,
+            'value' => $value,
+            'countBooks' => $countBooks,
+            'countconversation' => $countconversation,
+            'countselection' => $countselection
         ]);
     }
     public function deleteallbooks($id)

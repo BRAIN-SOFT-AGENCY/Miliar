@@ -30,6 +30,8 @@ class Book extends Model
         'isbanner',
         'nbViews',
         'extrait',
+        'conversation',
+        'selection',
     ];
     public function category()
     {

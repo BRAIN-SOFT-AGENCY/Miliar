@@ -260,8 +260,8 @@ Route::prefix('admin')->controller(AdminController::class)->group(function () {
 
     Route::get('/addpartnersList', 'addpartnersList')->name('superAdmin.addpartnersList');
     Route::post('/addpartnersList/store', 'storepartnersList')->name('superAdmin.addpartnersList.store');
-    Route::post('/superAdmin/books/toggle-banner', [AdminController::class, 'toggleBanner'])
-        ->name('superAdmin.books.toggleBanner');
+    Route::post('/superAdmin/books/toggle-banner', [AdminController::class, 'toggleBookOption'])
+        ->name('superAdmin.books.toggleOption');
 });
 
 Route::get('/', [MiliarController::class, 'index'])->name('miliar.index');

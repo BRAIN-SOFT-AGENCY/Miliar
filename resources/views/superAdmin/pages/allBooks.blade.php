@@ -45,7 +45,10 @@
                     <th>الصنف</th>
                     <th> المترجم</th>
                     <th>البانر</th>
-
+                    <th>حديث الساعة
+                    </th>
+                    <th>اخترنا لك
+                    </th>
                     <th></th>
                   </tr>
                 </thead>
@@ -75,8 +78,21 @@
                                     </td>
 
                                     <td>{{ $book->Titre }}</td>
-
-                                    <td>{{ $book->ResumeLivre }}</td>
+                                    <style>
+                                    .resume-3-lines {
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 3;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    }
+                                    
+                                    </style>
+                                    <td>
+                                      <div class="resume-3-lines">
+                                        {{ $book->ResumeLivre }}
+                                      </div>
+                                    </td>
 
 
                                     <td>{{ optional($book->category)->categoryName }}</td>
@@ -84,55 +100,74 @@
                                       {{ optional($book->translator)->translatorlastName }}
                                     </td>
                                     <style>
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 26px;
-        margin: 0;
-    }
+                                      .switch {
+                                        position: relative;
+                                        display: inline-block;
+                                        width: 50px;
+                                        height: 26px;
+                                        margin: 0;
+                                      }
 
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
+                                      .switch input {
+                                        opacity: 0;
+                                        width: 0;
+                                        height: 0;
+                                      }
 
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .3s;
-        border-radius: 30px;
-    }
+                                      .slider {
+                                        position: absolute;
+                                        cursor: pointer;
+                                        top: 0;
+                                        left: 0;
+                                        right: 0;
+                                        bottom: 0;
+                                        background-color: #ccc;
+                                        transition: .3s;
+                                        border-radius: 30px;
+                                      }
 
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 20px;
-        width: 20px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        transition: .3s;
-        border-radius: 50%;
-    }
+                                      .slider:before {
+                                        position: absolute;
+                                        content: "";
+                                        height: 20px;
+                                        width: 20px;
+                                        left: 3px;
+                                        bottom: 3px;
+                                        background-color: white;
+                                        transition: .3s;
+                                        border-radius: 50%;
+                                      }
 
-    .switch input:checked + .slider {
-        background-color: #28a745;
-    }
+                                      .switch input:checked+.slider {
+                                        background-color: #28a745;
+                                      }
 
-    .switch input:checked + .slider:before {
-        transform: translateX(24px);
-    }
-</style>
+                                      .switch input:checked+.slider:before {
+                                        transform: translateX(24px);
+                                      }
+                                    </style>
                                     <td>
                                       <label class="switch">
-                                        <input type="checkbox" class="banner-toggle" data-id="{{ $book->booksID }}" {{ $book->isbanner == 1 ? 'checked' : '' }}>
+                                        <input type="checkbox" class="book-option-toggle" data-id="{{ $book->booksID }}"
+                                          data-field="isbanner" {{ $book->isbanner == 1 ? 'checked' : '' }}>
+
+                                        <span class="slider"></span>
+                                      </label>
+                                    </td>
+                                    <td>
+                                      <label class="switch">
+                                        <input type="checkbox" class="book-option-toggle" data-id="{{ $book->booksID }}"
+                                          data-field="conversation" {{ $book->conversation == 1 ? 'checked' : '' }}>
+
+                                        <span class="slider"></span>
+                                      </label>
+                                    </td>
+
+                                    <td>
+                                      <label class="switch">
+                                        <input type="checkbox" class="book-option-toggle" data-id="{{ $book->booksID }}"
+                                          data-field="selection" {{ $book->selection == 1 ? 'checked' : '' }}>
+
                                         <span class="slider"></span>
                                       </label>
                                     </td>
@@ -263,52 +298,72 @@
     });
   </script>
   <script>
-   $(document).on('change', '.banner-toggle', function () {
+    $(document).on('change', '.book-option-toggle', function () {
 
-    let checkbox = $(this);
-    let booksID = checkbox.data('id');
-    let isbanner = checkbox.is(':checked') ? 1 : 0;
+      let checkbox = $(this);
 
-    $.ajax({
-        url: "{{ route('superAdmin.books.toggleBanner') }}",
+      let booksID = checkbox.data('id');
+      let field = checkbox.data('field');
+
+      let value = checkbox.is(':checked') ? 1 : 0;
+
+      $.ajax({
+
+        url: "{{ route('superAdmin.books.toggleOption') }}",
+
         type: "POST",
 
         data: {
-            _token: "{{ csrf_token() }}",
-            booksID: booksID,
-            isbanner: isbanner
+          _token: "{{ csrf_token() }}",
+          booksID: booksID,
+          field: field,
+          value: value
         },
 
-        success: function(response) {
+        success: function (response) {
 
-            if (response.success) {
+          if (response.success) {
 
-                $('#countBooks').text(response.countBooks);
+            $('#countBooks').text(response.countBooks);
 
-            } else {
+            $('#countconversation').text(response.countconversation);
 
-                // Si la limite de 5 est atteinte
-                checkbox.prop('checked', false);
+            $('#countselection').text(response.countselection);
 
-                alert(response.message);
-            }
-        },
+            console.log(
+              'Book ID:', booksID,
+              'Field:', response.field,
+              'Value:', response.value
+            );
 
-        error: function(xhr) {
+          } else {
 
             checkbox.prop('checked', false);
 
-            console.log(xhr.responseText);
+            alert(response.message);
+          }
+        },
 
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                alert(xhr.responseJSON.message);
-            } else {
-                alert('حدث خطأ أثناء تحديث البانر');
-            }
+        error: function (xhr) {
+
+          checkbox.prop(
+            'checked',
+            !checkbox.is(':checked')
+          );
+
+          console.log(xhr.responseText);
+
+          if (xhr.responseJSON && xhr.responseJSON.message) {
+
+            alert(xhr.responseJSON.message);
+
+          } else {
+
+            alert('حدث خطأ أثناء تحديث البيانات');
+          }
         }
-    });
+      });
 
-});
-    
-</script>
+    });
+  </script>
 @endsection
