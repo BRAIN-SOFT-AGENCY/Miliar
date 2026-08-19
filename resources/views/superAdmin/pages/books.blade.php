@@ -43,6 +43,8 @@
                     <th> الصورة </th>
                     <th>عنوان الكتاب</th>
                     <th>الملخص </th>
+                    <th>الصنف</th>
+                    <th> المترجم</th>
                     <th>PDF</th>
                     <th></th>
                   </tr>
@@ -78,6 +80,10 @@
                       </style>
 
 
+                      <td>{{ $book->category->categoryName }}</td>
+
+                      <td>{{ $book->translator->translatorfirstName }} {{ $book->translator->translatorlastName }}</td>
+
 
                       <td>
 
@@ -106,13 +112,13 @@
                           <i class="fa fa-plus"></i>
                         </a>
                         <!--form action="{{ route('books.publish', $book->booksID) }}" method="POST" style="display:inline;">
-                                                                  @csrf
-                                                                  <button type="submit" class="btn btn-warning btn-xs"
-                                                                    style="background-color: #a1038d;    border-color: #a1038d;"
-                                                                    onclick="return confirm('هل أنت متأكد من نشر هذا الكتاب؟')">
-                                                                    <i class="fa fa-share"></i>
-                                                                  </button>
-                                                                </form-->
+                                                                              @csrf
+                                                                              <button type="submit" class="btn btn-warning btn-xs"
+                                                                                style="background-color: #a1038d;    border-color: #a1038d;"
+                                                                                onclick="return confirm('هل أنت متأكد من نشر هذا الكتاب؟')">
+                                                                                <i class="fa fa-share"></i>
+                                                                              </button>
+                                                                            </form-->
                         <button type="button" class="btn btn-warning btn-xs"
                           style="background-color:#a1038d;border-color:#a1038d;" data-toggle="modal"
                           data-target="#publishModal{{ $book->booksID }}" style="    padding: 5px;">
@@ -142,7 +148,7 @@
                                   <label>تاريخ النشر</label>
 
                                   <!--input type="date" name="PublierLe" class="form-control" value="{{ date('Y-m-d') }}"
-                                            required-->
+                                                        required-->
                                   <input type="datetime-local" name="PublierLe" class="form-control"
                                     value="{{ date('Y-m-d\TH:i') }}" required>
                                 </div>
@@ -205,7 +211,11 @@
   <!-- page script -->
   <script>
     $(function () {
-      $("#example1").DataTable();
+      $("#example1").DataTable({
+        columnDefs: [
+          { targets: [0, 5], searchable: false }
+        ]
+      });
       $('#example2').DataTable({
         "paging": true,
         "lengthChange": false,

@@ -43,7 +43,8 @@
                     <th> الصورة </th>
                     <th>عنوان الكتاب</th>
                     <th>الملخص </th>
-                    <th>تاريخ النشر</th>
+                    <th>الصنف</th>
+                    <th> المترجم</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -77,7 +78,10 @@
                         }
                       </style>
 
-                      <td>{{ $book->PublierLe }}</td>
+                      <td>{{ $book->category->categoryName }}</td>
+
+                      <td>{{ $book->translator->translatorfirstName }} {{ $book->translator->translatorlastName }}</td>
+
 
 
                       <td style="display:flex; gap:5px; justify-content:center;">
@@ -184,7 +188,11 @@
   <!-- page script -->
   <script>
     $(function () {
-      $("#example1").DataTable();
+      $("#example1").DataTable({
+        columnDefs: [
+          { targets: [0, 5], searchable: false }
+        ]
+      });
       $('#example2').DataTable({
         "paging": true,
         "lengthChange": false,

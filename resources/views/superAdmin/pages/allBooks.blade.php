@@ -42,7 +42,8 @@
                     <th> الصورة </th>
                     <th>عنوان الكتاب</th>
                     <th>الملخص </th>
-                    <th>تاريخ النشر</th>
+                    <th>الصنف</th>
+                    <th> المترجم</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -76,11 +77,9 @@
                                     <td>{{ $book->ResumeLivre }}</td>
 
 
-                                    <td>{{ $book->PublierLe }}</td>
-
-
-
-
+                                    <td>{{ optional($book->category)->categoryName }}</td>
+                                    <td>{{ optional($book->translator)->translatorfirstName }}
+                                      {{ optional($book->translator)->translatorlastName }}</td>
                                     <td style="display:flex; gap:5px; justify-content:center;">
 
                                       <a href="{{ route('books.deleteall', $book->booksID) }}" class="btn btn-danger btn-xs"
@@ -192,7 +191,11 @@
   <!-- page script -->
   <script>
     $(function () {
-      $("#example1").DataTable();
+      $("#example1").DataTable({
+        columnDefs: [
+          { targets: [0, 5], searchable: false }
+        ]
+      });
       $('#example2').DataTable({
         "paging": true,
         "lengthChange": false,
