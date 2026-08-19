@@ -234,9 +234,7 @@
                   <i class="fa fa-save"></i> حفظ المسودة
                 </button>
 
-                <a href="{{ route('translator.pages.books') }}" class="btn btn-default btn-lg">
-                  <i class="fa fa-arrow-right"></i> رجوع
-                </a>
+             
 
               </div>
 

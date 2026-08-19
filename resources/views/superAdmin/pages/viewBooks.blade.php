@@ -274,7 +274,7 @@
 
                   <br>
 
-                  <a href="{{ asset('includesAdmin/img/books/' . $book->pdf_file) }}" target="_blank"
+                  <a href="{{ asset('includesAdmin/pdf/books/' . $book->pdf_file) }}" target="_blank"
                     class="btn btn-danger">
 
                     <i class="fa fa-file-pdf-o"></i>
