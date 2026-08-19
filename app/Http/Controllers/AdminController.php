@@ -147,8 +147,7 @@ class AdminController extends Controller
     }
     public function books()
     {
-        $books = Book::orderBy('booksID', 'desc')->where('books.status', -2)->where('books.type', 1)
-            ->get();
+        //$books = Book::orderBy('booksID', 'desc')->where('books.status', -2)->get();
 
         return view('superAdmin.pages.books', compact('books'));
     }
@@ -502,30 +501,98 @@ class AdminController extends Controller
         return view('superAdmin.pages.editEtudes', compact('book', 'translators', 'categories'));
     }
 
+    /*   public function allBooks()
+       {
+           //$books = Book::orderBy('booksID', 'desc')->where('books.status', 0)
+           //  ->get();
+           $books = Book::where('status', 0)
+
+               ->orderBy('booksID', 'desc')
+
+               ->select([
+
+                   'booksID',
+
+                   'Image',
+
+                   'Titre',
+
+                   'ResumeLivre',
+
+                   'pdf_file',
+                   'categoryID',
+                   'translatorID',
+                   'type',
+                   'isbanner',
+               ])
+
+               ->cursor();
+           $countBooks = Book::where('isbanner', 1)->count();
+
+           return view('superAdmin.pages.allBooks', compact('books', 'countBooks'));
+       }*/
+
     public function allBooks()
     {
-        //$books = Book::orderBy('booksID', 'desc')->where('books.status', 0)
-        //  ->get();
         $books = Book::where('status', 0)
-
             ->orderBy('booksID', 'desc')
-
             ->select([
-
                 'booksID',
-
                 'Image',
-
                 'Titre',
-
                 'ResumeLivre',
-
-                'pdf_file'
-
+                'pdf_file',
+                'categoryID',
+                'translatorID',
+                'type',
+                'isbanner',
             ])
+            ->with(['category', 'translator'])
+            ->get();
 
-            ->cursor();
-        return view('superAdmin.pages.allBooks', compact('books'));
+        $countBooks = Book::where('isbanner', 1)->count();
+
+        return view('superAdmin.pages.allBooks', compact('books', 'countBooks'));
+    }
+
+    public function toggleBanner(Request $request)
+    {
+        $book = Book::find($request->booksID);
+
+        if (!$book) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الكتاب غير موجود'
+            ], 404);
+        }
+
+        // Si on veut activer le banner
+        if ((int) $request->isbanner === 1) {
+
+            $countBooks = Book::where('isbanner', 1)->count();
+
+            // Limite maximale = 5
+            if ($countBooks >= 5) {
+
+                return response()->json([
+                    'success' => false,
+                    'limit' => true,
+                    'message' => 'لقد قمت بإضافة 5 بانرات بالفعل، وهذا هو الحد الأقصى. يرجى حذف أحد البانرات أولاً حتى تتمكن من إضافة بانر جديد.'
+                ]);
+            }
+        }
+
+        // Activation ou désactivation
+        $book->isbanner = (int) $request->isbanner;
+        $book->save();
+
+        $countBooks = Book::where('isbanner', 1)->count();
+
+        return response()->json([
+            'success' => true,
+            'isbanner' => $book->isbanner,
+            'countBooks' => $countBooks
+        ]);
     }
     public function deleteallbooks($id)
     {

@@ -44,6 +44,8 @@
                     <th>الملخص </th>
                     <th>الصنف</th>
                     <th> المترجم</th>
+                    <th>البانر</th>
+
                     <th></th>
                   </tr>
                 </thead>
@@ -79,7 +81,61 @@
 
                                     <td>{{ optional($book->category)->categoryName }}</td>
                                     <td>{{ optional($book->translator)->translatorfirstName }}
-                                      {{ optional($book->translator)->translatorlastName }}</td>
+                                      {{ optional($book->translator)->translatorlastName }}
+                                    </td>
+                                    <style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+        margin: 0;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .3s;
+        border-radius: 30px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .3s;
+        border-radius: 50%;
+    }
+
+    .switch input:checked + .slider {
+        background-color: #28a745;
+    }
+
+    .switch input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+</style>
+                                    <td>
+                                      <label class="switch">
+                                        <input type="checkbox" class="banner-toggle" data-id="{{ $book->booksID }}" {{ $book->isbanner == 1 ? 'checked' : '' }}>
+                                        <span class="slider"></span>
+                                      </label>
+                                    </td>
                                     <td style="display:flex; gap:5px; justify-content:center;">
 
                                       <a href="{{ route('books.deleteall', $book->booksID) }}" class="btn btn-danger btn-xs"
@@ -206,4 +262,53 @@
       });
     });
   </script>
+  <script>
+   $(document).on('change', '.banner-toggle', function () {
+
+    let checkbox = $(this);
+    let booksID = checkbox.data('id');
+    let isbanner = checkbox.is(':checked') ? 1 : 0;
+
+    $.ajax({
+        url: "{{ route('superAdmin.books.toggleBanner') }}",
+        type: "POST",
+
+        data: {
+            _token: "{{ csrf_token() }}",
+            booksID: booksID,
+            isbanner: isbanner
+        },
+
+        success: function(response) {
+
+            if (response.success) {
+
+                $('#countBooks').text(response.countBooks);
+
+            } else {
+
+                // Si la limite de 5 est atteinte
+                checkbox.prop('checked', false);
+
+                alert(response.message);
+            }
+        },
+
+        error: function(xhr) {
+
+            checkbox.prop('checked', false);
+
+            console.log(xhr.responseText);
+
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                alert(xhr.responseJSON.message);
+            } else {
+                alert('حدث خطأ أثناء تحديث البانر');
+            }
+        }
+    });
+
+});
+    
+</script>
 @endsection
