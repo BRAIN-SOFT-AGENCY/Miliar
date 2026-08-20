@@ -49,22 +49,25 @@ class MiliarController extends Controller
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->where('books.conversation', 1)
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
             ->orderBy('books.booksID', 'desc')
-            ->take(4)
+            ->take(5)
             ->get();
 
         $bookVue = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-            ->orderBy('books.booksID', 'desc')
-            ->where('books.categoryID', 2)
+            ->select(
+                'books.*',
+                'category.categoryName as categoryName',
+                'translator.translatorfirstName as translatorfirstName',
+                'translator.translatorlastName as translatorlastName'
+            )
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-
-            ->take(4)
+            ->orderBy('books.nbViews', 'desc')
+            ->take(5)
             ->get();
 
         $bookChoix = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -72,11 +75,11 @@ class MiliarController extends Controller
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
             ->orderBy('books.booksID', 'desc')
-            ->where('books.categoryID', 3)
+            ->where('books.selection', 1)
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
 
-            ->take(4)
+            ->take(5)
             ->get();
 
         $bookDerIndex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -244,6 +247,8 @@ class MiliarController extends Controller
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
             ->orderBy('books.booksID', 'desc')
+            ->where('books.conversation', 1)
+
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
 
@@ -252,14 +257,16 @@ class MiliarController extends Controller
 
         $bookVue = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-            ->orderBy('books.booksID', 'desc')
+            ->select(
+                'books.*',
+                'category.categoryName as categoryName',
+                'translator.translatorfirstName as translatorfirstName',
+                'translator.translatorlastName as translatorlastName'
+            )
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-            ->where('books.categoryID', 2)
-
-            ->take(6)
+            ->orderBy('books.nbViews', 'desc')
+            ->take(5)
             ->get();
 
         $bookChoix = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -269,7 +276,7 @@ class MiliarController extends Controller
             ->orderBy('books.booksID', 'desc')
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-            ->where('books.categoryID', 3)
+            ->where('books.selection', 1)
 
             ->take(6)
             ->get();
@@ -815,7 +822,7 @@ class MiliarController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $categories = Category::where('parent',0)->where('isActive', 1)->get();
+        $categories = Category::where('parent', 0)->where('isActive', 1)->get();
 
 
         /*
@@ -1038,9 +1045,9 @@ class MiliarController extends Controller
 
     public function booksDetails($id)
     {
-//Added By AYMAN
+        //Added By AYMAN
         Book::where('booksID', $id)->increment('nbViews');
-		// Récupérer le livre correspondant à l'ID
+        // Récupérer le livre correspondant à l'ID
         $book = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')

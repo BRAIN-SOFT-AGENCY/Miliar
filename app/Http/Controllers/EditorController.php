@@ -87,6 +87,8 @@ class EditorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 
@@ -157,6 +159,8 @@ class EditorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 
@@ -238,6 +242,8 @@ class EditorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 
@@ -325,25 +331,18 @@ class EditorController extends Controller
     public function viewetudesPart($id)
     {
         $etudesPart = EtudesPart::findOrFail($id);
-        // Vérifier que le translator connecté est bien le propriétaire (optionnel)
-        if ($etudesPart->translatorID != Auth::guard('translator')->user()->translatorID) {
-            abort(403, 'Vous n\'êtes pas autorisé à modifier cette étude.');
-        }
-        $translators = Translator::select('translatorID', 'translatorfirstName', 'translatorLastName')->get();
+
         $categories = Category::select('categoryID', 'categoryName')->get();
         //echo  $etudesPart;die();
         return view('editor.pages.viewetudesPart', compact('etudesPart', 'categories'));
     }
     public function editetudesPart($id)
     {
+
         $etudesPart = EtudesPart::findOrFail($id);
-        // Vérifier que le translator connecté est bien le propriétaire (optionnel)
-        if ($etudesPart->translatorID != Auth::guard('translator')->user()->translatorID) {
-            abort(403, 'Vous n\'êtes pas autorisé à modifier cette étude.');
-        }
-        $translators = Translator::select('translatorID', 'translatorfirstName', 'translatorLastName')->get();
+
         $categories = Category::select('categoryID', 'categoryName')->get();
-        //echo  $etudesPart;die();
+        //  echo $etudesPart;        die();
         return view('editor.pages.editetudesPart', compact('etudesPart', 'categories'));
     }
 
@@ -351,10 +350,7 @@ class EditorController extends Controller
     {
         $etudesPart = EtudesPart::findOrFail($id);
 
-        // Sécurité
-        if ($etudesPart->translatorID != Auth::guard('translator')->user()->translatorID) {
-            abort(403, 'Vous n\'êtes pas autorisé à modifier cette étude.');
-        }
+
 
         // Validation
         $request->validate([
@@ -366,12 +362,13 @@ class EditorController extends Controller
             'etudespartarticle' => 'nullable|string',
             'etudespartResumeLivre' => 'nullable|string',
             'etudespartImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'translatorID' => 'required|exists:translator,translatorID',
         ]);
 
         // Update champs
         $etudesPart->etudespartTitre = $request->etudespartTitre;
         $etudesPart->categoryID = $request->categoryID;
-        $etudesPart->translatorID = Auth::guard('translator')->user()->translatorID;
+        $etudesPart->translatorID = $request->translatorID;
         $etudesPart->etudespartNomAuteur = $request->etudespartNomAuteur;
         $etudesPart->etudespartMaisonEdition = $request->etudespartMaisonEdition;
         $etudesPart->etudespartDateSortie = $request->etudespartDateSortie;

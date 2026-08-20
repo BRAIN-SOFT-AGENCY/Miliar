@@ -79,6 +79,8 @@ class TranslatorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 
@@ -107,7 +109,9 @@ class TranslatorController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
-        $data['nbViews'] = 0;
+         $data['nbViews'] = 0;
+        $data['conversation'] = 0;
+        $data['selection'] = 0;
 
         Book::create($data);
 
@@ -167,6 +171,8 @@ class TranslatorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 
@@ -206,7 +212,9 @@ class TranslatorController extends Controller
 
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
-        $data['nbViews'] = 0;
+         $data['nbViews'] = 0;
+        $data['conversation'] = 0;
+        $data['selection'] = 0;
 
         Book::create($data);
 
@@ -266,6 +274,8 @@ class TranslatorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
 
         ]);
@@ -295,7 +305,9 @@ class TranslatorController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
-        $data['nbViews'] = 0;
+         $data['nbViews'] = 0;
+        $data['conversation'] = 0;
+        $data['selection'] = 0;
 
         Book::create($data);
 
@@ -482,6 +494,8 @@ class TranslatorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 
@@ -560,6 +574,8 @@ class TranslatorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 
@@ -638,6 +654,8 @@ class TranslatorController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 

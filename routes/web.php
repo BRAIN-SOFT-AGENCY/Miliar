@@ -124,7 +124,8 @@ Route::prefix('editor')->controller(EditorController::class)->group(function () 
         ->name('editor.etude.view');
     Route::get('/books/view/{id}', [EditorController::class, 'viewBooks'])
         ->name('editor.books.view');
-    Route::get('/etudesPart/{id}', 'etudesPart')->name('editor.pages.etudesPart');
+    Route::get('/etudesPart/{id}', [EditorController::class, 'etudesPart'])
+        ->name('editor.pages.etudesPart');
 
     Route::get('/viewbooksPart/{id}', [EditorController::class, 'viewetudesPart'])
         ->name('editor.etudesPart.view');

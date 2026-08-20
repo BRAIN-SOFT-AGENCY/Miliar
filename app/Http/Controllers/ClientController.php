@@ -16,177 +16,6 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
-
-    /*   public function index()
-       {
-
-           $getBooksByCategory = function ($categoryId) {
-               return Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-                   ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-                   ->select(
-                       'books.*',
-                       'category.categoryName as categoryName',
-                       'translator.translatorfirstName as translatorfirstName',
-                       'translator.translatorlastName as translatorlastName'
-                   )
-                   ->where('books.categoryID', $categoryId)
-                   ->where('books.status', 0)
-                   ->whereDate('books.PublierLe', '<=', now())
-                   ->orderBy('books.booksID', 'desc')
-                   ->take(5) // les 4 derniers
-                   ->get();
-           };
-
-           $category1 = $getBooksByCategory(1);
-           $category2 = $getBooksByCategory(2);
-           $category3 = $getBooksByCategory(3);
-           $category4 = $getBooksByCategory(4);
-           $category6 = $getBooksByCategory(6);
-           $bookDer = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->orderBy('books.booksID', 'desc')
-               ->take(4)
-               ->get();
-
-           $bookVue = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.categoryID', 2)
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-
-               ->take(4)
-               ->get();
-
-           $bookChoix = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.categoryID', 3)
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-
-               ->take(4)
-               ->get();
-
-           $bookDerIndex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-
-               ->take(3)
-               ->get();
-           $bookDerIndex2 = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-
-               ->skip(12)   //  ignore les 6 premiers
-               ->take(6)   //  prend les 6 suivants
-               ->get();
-
-           $bookBanner = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->where('books.isbanner', 1)
-               ->take(4)->get();
-           $bookBanner1 = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->where('books.isbanner', 1)
-
-               ->skip(4)   //  ignore les 6 premiers
-               ->take(1)->get();
-           $translatorscount = Translator::count();
-           $categorycount = Category::count();
-           $bookscount = Book::count();
-           $mainCounter = statistique::value('statistiqueBooksCount');
-           $translators = Translator::withCount('books')
-               ->orderBy('books_count', 'desc')
-               ->get();
-
-
-           $articlesCount = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->where('books.type', 0)
-               ->count();
-           $booksCount = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->where('books.type', 1)
-               ->count();
-           $studiesCount = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->where('books.type', 1)
-               ->count();
-
-
-           $booksindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->where('books.type', 1)
-               ->take(2)
-               ->get();
-           //   echo print_r($booksindex);die();
-           $articlesindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->where('books.type', 0)
-               ->take(2)
-               ->get();
-           $etudesindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
-               ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-               ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-               ->orderBy('books.booksID', 'desc')
-               ->where('books.status', 0)
-               ->whereDate('books.PublierLe', '<=', now())
-               ->where('books.type', 2)
-               ->take(2)
-               ->get();
-           return view('client.pages.index', compact('booksindex', 'articlesindex', 'etudesindex', 'articlesCount', 'booksCount', 'studiesCount', 'category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2', 'bookBanner', 'bookBanner1', 'translatorscount', 'categorycount', 'bookscount', 'mainCounter', 'translators'));
-
-       }*/
     public function index()
     {
         // Fonction pour récupérer les 6 derniers livres d'une catégorie
@@ -218,21 +47,25 @@ class ClientController extends Controller
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
             ->where('books.status', 0)
+            ->where('books.conversation', 1)
+
             ->whereDate('books.PublierLe', '<=', now())
             ->orderBy('books.booksID', 'desc')
-            ->take(4)
+            ->take(5)
             ->get();
 
         $bookVue = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-            ->orderBy('books.booksID', 'desc')
-            ->where('books.categoryID', 2)
+            ->select(
+                'books.*',
+                'category.categoryName as categoryName',
+                'translator.translatorfirstName as translatorfirstName',
+                'translator.translatorlastName as translatorlastName'
+            )
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-
-            ->take(4)
+            ->orderBy('books.nbViews', 'desc')
+            ->take(5)
             ->get();
 
         $bookChoix = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -240,11 +73,11 @@ class ClientController extends Controller
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
             ->orderBy('books.booksID', 'desc')
-            ->where('books.categoryID', 3)
+            ->where('books.selection', 1)
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
 
-            ->take(4)
+            ->take(5)
             ->get();
 
         $bookDerIndex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')

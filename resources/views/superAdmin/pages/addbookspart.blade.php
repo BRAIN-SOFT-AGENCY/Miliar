@@ -194,7 +194,7 @@
                       })
                       .then(data => {
 
-                        document.getElementById('ResumeLivre').value = data.summary;
+                        document.getElementById('bookspartResumeLivre').value = data.summary;
 
                       })
                       .catch(error => {

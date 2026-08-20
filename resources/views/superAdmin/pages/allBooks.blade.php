@@ -1,5 +1,4 @@
 @extends('superAdmin.layouts.app')
-
 @section('content')
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -79,14 +78,13 @@
 
                                     <td>{{ $book->Titre }}</td>
                                     <style>
-                                    .resume-3-lines {
-                                    display: -webkit-box;
-                                    -webkit-line-clamp: 3;
-                                    -webkit-box-orient: vertical;
-                                    overflow: hidden;
-                                    text-overflow: ellipsis;
-                                    }
-                                    
+                                      .resume-3-lines {
+                                        display: -webkit-box;
+                                        -webkit-line-clamp: 3;
+                                        -webkit-box-orient: vertical;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                      }
                                     </style>
                                     <td>
                                       <div class="resume-3-lines">
@@ -262,7 +260,93 @@
 
 
               </table>
+              <style>
+                .pagination {
+                  display: flex !important;
+                  justify-content: center !important;
+                  align-items: center !important;
+                  margin: 20px 0 !important;
+                  padding-left: 0 !important;
+                  list-style: none !important;
+                  border-radius: 4px !important;
+                  gap: 0 !important;
+                }
 
+                .pagination>li {
+                  display: inline !important;
+                }
+
+                .pagination>li>a,
+                .pagination>li>span {
+                  position: relative !important;
+                  float: left !important;
+                  padding: 6px 12px !important;
+                  margin-left: -1px !important;
+                  line-height: 1.42857143 !important;
+                  color: #337ab7 !important;
+                  text-decoration: none !important;
+                  background-color: #fff !important;
+                  border: 1px solid #ddd !important;
+                  font-size: 14px !important;
+                }
+
+                /* Premier bouton : Previous */
+                .pagination>li:first-child>a,
+                .pagination>li:first-child>span {
+                  margin-left: 0 !important;
+                  border-top-left-radius: 4px !important;
+                  border-bottom-left-radius: 4px !important;
+                }
+
+                /* Dernier bouton : Next */
+                .pagination>li:last-child>a,
+                .pagination>li:last-child>span {
+                  border-top-right-radius: 4px !important;
+                  border-bottom-right-radius: 4px !important;
+                }
+
+                /* Page sélectionnée */
+                .pagination>.active>a,
+                .pagination>.active>span,
+                .pagination>.active>a:hover,
+                .pagination>.active>span:hover,
+                .pagination>.active>a:focus,
+                .pagination>.active>span:focus {
+                  z-index: 3 !important;
+                  color: #fff !important;
+                  cursor: default !important;
+                  background-color: #337ab7 !important;
+                  border-color: #337ab7 !important;
+                }
+
+                /* Hover */
+                .pagination>li>a:hover,
+                .pagination>li>span:hover,
+                .pagination>li>a:focus,
+                .pagination>li>span:focus {
+                  z-index: 2 !important;
+                  color: #23527c !important;
+                  background-color: #eee !important;
+                  border-color: #ddd !important;
+                }
+
+                /* Previous / Next désactivé */
+                .pagination>.disabled>span,
+                .pagination>.disabled>span:hover,
+                .pagination>.disabled>span:focus,
+                .pagination>.disabled>a,
+                .pagination>.disabled>a:hover,
+                .pagination>.disabled>a:focus {
+                  color: #777 !important;
+                  cursor: not-allowed !important;
+                  background-color: #fff !important;
+                  border-color: #ddd !important;
+                }
+              </style>
+
+              <div class="d-flex justify-content-center mt-3">
+                {{ $books->links() }}
+              </div>
               <script>
                 $(function () {
                   $('[data-toggle="tooltip"]').tooltip();
@@ -282,7 +366,17 @@
   <!-- page script -->
   <script>
     $(function () {
+      /*  $("#example1").DataTable({
+          columnDefs: [
+            { targets: [0, 5], searchable: false }
+          ]
+        });*/
       $("#example1").DataTable({
+        "paging": false,
+        "searching": true,
+        "ordering": true,
+        "info": false,
+        "autoWidth": false,
         columnDefs: [
           { targets: [0, 5], searchable: false }
         ]

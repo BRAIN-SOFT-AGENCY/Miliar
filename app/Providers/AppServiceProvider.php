@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\View;
 use App\Models\Category;
 use App\Models\Book;
 use App\Models\Translator;
-
+use Illuminate\Pagination\Paginator;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -73,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
 //translator count waitting
             $translatorcountAdmin = Translator::where('translatorStatus', 0)
                 ->count();
+            Paginator::useBootstrap();
 
             $view->with([
                 'categories' => $categories,

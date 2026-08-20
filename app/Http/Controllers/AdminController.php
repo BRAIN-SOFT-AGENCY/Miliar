@@ -109,6 +109,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
 
         ]);
@@ -139,6 +141,8 @@ class AdminController extends Controller
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
         $data['nbViews'] = 0;
+        $data['conversation'] = 0;
+        $data['selection'] = 0;
 
         Book::create($data);
 
@@ -147,7 +151,7 @@ class AdminController extends Controller
     }
     public function books()
     {
-        //$books = Book::orderBy('booksID', 'desc')->where('books.status', -2)->get();
+        $books = Book::orderBy('booksID', 'desc')->where('books.status', -2)->get();
 
         return view('superAdmin.pages.books', compact('books'));
     }
@@ -307,6 +311,9 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
+
             'extrait' => 'nullable',
         ]);
 
@@ -337,6 +344,8 @@ class AdminController extends Controller
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
 
         $data['nbViews'] = 0;
+        $data['conversation'] = 0;
+        $data['selection'] = 0;
         Book::create($data);
 
         // Redirection vers la page des livres
@@ -373,6 +382,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
 
         ]);
@@ -414,6 +425,8 @@ class AdminController extends Controller
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
         $data['nbViews'] = 0;
+        $data['conversation'] = 0;
+        $data['selection'] = 0;
 
         Book::create($data);
 
@@ -449,6 +462,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
         ]);
 
@@ -478,6 +493,8 @@ class AdminController extends Controller
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
         $data['nbViews'] = 0;
+        $data['conversation'] = 0;
+        $data['selection'] = 0;
 
         Book::create($data);
 
@@ -550,7 +567,7 @@ class AdminController extends Controller
                 'selection',
             ])
             ->with(['category', 'translator'])
-            ->get();
+            ->paginate(10);
 
         $countBooks = Book::where('isbanner', 1)->count();
         $countconversation = Book::where('conversation', 1)->count();
@@ -844,6 +861,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
 
         ]);
@@ -874,6 +893,9 @@ class AdminController extends Controller
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
         $data['nbViews'] = 0;
+        $data['conversation'] = 0;
+        $data['selection'] = 0;
+
 
         Book::create($data);
 
@@ -1234,6 +1256,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
 
         ]);
@@ -1312,6 +1336,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
 
         ]);
@@ -1394,6 +1420,8 @@ class AdminController extends Controller
             'status' => 'required',
             'isbanner' => 'required',
             'nbViews' => 'nullable',
+            'conversation' => 'nullable',
+            'selection' => 'nullable',
             'extrait' => 'nullable',
 
         ]);

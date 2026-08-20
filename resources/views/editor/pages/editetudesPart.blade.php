@@ -61,7 +61,7 @@
                                     </div>
 
                                     <!-- translatorID caché -->
-                                    <input type="hidden" name="translatorID" value="{{ Auth::guard('translator')->user()->translatorID }}">
+                                    <input type="hidden" name="translatorID" value="{{ old('translatorID', $etudesPart->translatorID) }}">
 
                                     <div class="form-group">
                                         <label>اسم المؤلف</label>
@@ -174,9 +174,7 @@
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fa fa-save"></i>  حفظ المسودة 
                             </button>
-                            <a href="{{ route('editor.pages.etudesPart',$etudesPart->booksID) }}" class="btn btn-default btn-lg">
-                                <i class="fa fa-arrow-right"></i> رجوع
-                            </a>
+                    
                         </div>
                     </form>
                 </div>
