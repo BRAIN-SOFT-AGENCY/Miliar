@@ -1759,7 +1759,7 @@ p {
 
                 <div class="stat-card featured">
                     <!--div class="icon gold"><i class="fas fa-language"></i></div-->
-                    <h3>{{ number_format($articlescountlettres) }}</h3>
+                    <h3>{{ number_format($articlescountmots) }}</h3>
                     <div class="shine"></div>
                     <p>كلمة مترجمة حتى الآن</p>
                 </div>

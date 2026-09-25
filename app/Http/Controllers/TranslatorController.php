@@ -82,6 +82,7 @@ class TranslatorController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
         ]);
 
         // Upload image
@@ -92,7 +93,7 @@ class TranslatorController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -109,7 +110,7 @@ class TranslatorController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
-         $data['nbViews'] = 0;
+        $data['nbViews'] = 0;
         $data['conversation'] = 0;
         $data['selection'] = 0;
 
@@ -124,7 +125,7 @@ class TranslatorController extends Controller
 
         // supprimer image
         if ($book->Image != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $book->Image);
+            $imagePath = public_path('includesAdmin/img/books/' . $book->Image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -132,7 +133,7 @@ class TranslatorController extends Controller
 
         // supprimer pdf
         if ($book->pdf_file) {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $book->pdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $book->pdf_file);
             if (file_exists($pdfPath)) {
                 unlink($pdfPath);
             }
@@ -174,6 +175,7 @@ class TranslatorController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
         ]);
 
         // Upload image
@@ -184,7 +186,7 @@ class TranslatorController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -200,11 +202,11 @@ class TranslatorController extends Controller
             $data['Image'] = 'default.jpg';
         }
         // Upload PDF
-        // Upload PDF dans ../includesAdmin/pdf/books
+        // Upload PDF dans includesAdmin/pdf/books
         if ($request->hasFile('pdf_file')) {
             $file = $request->file('pdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
             $data['pdf_file'] = $filename;
         } else {
             $data['pdf_file'] = 'test.pdf';
@@ -212,7 +214,7 @@ class TranslatorController extends Controller
 
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
-         $data['nbViews'] = 0;
+        $data['nbViews'] = 0;
         $data['conversation'] = 0;
         $data['selection'] = 0;
 
@@ -228,7 +230,7 @@ class TranslatorController extends Controller
 
         // supprimer image
         if ($book->Image != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $book->Image);
+            $imagePath = public_path('includesAdmin/img/books/' . $book->Image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -236,7 +238,7 @@ class TranslatorController extends Controller
 
         // supprimer pdf
         if ($book->pdf_file) {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $book->pdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $book->pdf_file);
             if (file_exists($pdfPath)) {
                 unlink($pdfPath);
             }
@@ -277,6 +279,7 @@ class TranslatorController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
 
         ]);
 
@@ -288,7 +291,7 @@ class TranslatorController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -305,7 +308,7 @@ class TranslatorController extends Controller
         }
         // Ajouter la date de publication automatiquement
         $data['PublierLe'] = now()->toDateString(); // yyyy-mm-dd
-         $data['nbViews'] = 0;
+        $data['nbViews'] = 0;
         $data['conversation'] = 0;
         $data['selection'] = 0;
 
@@ -320,7 +323,7 @@ class TranslatorController extends Controller
 
         // supprimer image
         if ($book->Image != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $book->Image);
+            $imagePath = public_path('includesAdmin/img/books/' . $book->Image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -328,7 +331,7 @@ class TranslatorController extends Controller
 
         // supprimer pdf
         if ($book->pdf_file) {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $book->pdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $book->pdf_file);
             if (file_exists($pdfPath)) {
                 unlink($pdfPath);
             }
@@ -375,6 +378,7 @@ class TranslatorController extends Controller
             'bookspartVersionImprimable' => 'nullable',
             'bookspartResumeLivre' => 'nullable',
             'bookpartarticle' => 'nullable',
+            'nbremots' => 'nullable',
 
             'booksPartImage' => 'nullable|image|mimes:jpg,jpeg,png',
             'bookspartpdf_file' => 'nullable|mimes:pdf',
@@ -396,7 +400,7 @@ class TranslatorController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -412,11 +416,11 @@ class TranslatorController extends Controller
             $data['booksPartImage'] = 'default.jpg';
         }
         // Upload PDF
-        // Upload PDF dans ../includesAdmin/pdf/books
+        // Upload PDF dans includesAdmin/pdf/books
         if ($request->hasFile('bookspartpdf_file')) {
             $file = $request->file('bookspartpdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
             $data['bookspartpdf_file'] = $filename;
         } else {
             $data['bookspartpdf_file'] = 'test.pdf';
@@ -445,7 +449,7 @@ class TranslatorController extends Controller
 
         // supprimer image
         if (!empty($Bookspart->booksPartImage) && $Bookspart->booksPartImage !== 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $Bookspart->booksPartImage);
+            $imagePath = public_path('includesAdmin/img/books/' . $Bookspart->booksPartImage);
 
             if (is_file($imagePath)) {
                 unlink($imagePath);
@@ -454,7 +458,7 @@ class TranslatorController extends Controller
 
         // supprimer pdf
         if (!empty($Bookspart->bookspartpdf_file) && $Bookspart->bookspartpdf_file !== 'test.pdf') {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $Bookspart->bookspartpdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $Bookspart->bookspartpdf_file);
 
             if (is_file($pdfPath)) {
                 unlink($pdfPath);
@@ -497,6 +501,7 @@ class TranslatorController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
         ]);
 
         // IMAGE
@@ -505,7 +510,7 @@ class TranslatorController extends Controller
             $file = $request->file('Image');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/img/books/'), $filename);
+            $file->move(public_path('includesAdmin/img/books/'), $filename);
 
             $data['Image'] = $filename;
 
@@ -521,7 +526,7 @@ class TranslatorController extends Controller
             $file = $request->file('pdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
 
             $data['pdf_file'] = $filename;
 
@@ -577,6 +582,7 @@ class TranslatorController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
         ]);
 
         // IMAGE
@@ -585,7 +591,7 @@ class TranslatorController extends Controller
             $file = $request->file('Image');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/img/books/'), $filename);
+            $file->move(public_path('includesAdmin/img/books/'), $filename);
 
             $data['Image'] = $filename;
 
@@ -601,7 +607,7 @@ class TranslatorController extends Controller
             $file = $request->file('pdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
 
             $data['pdf_file'] = $filename;
 
@@ -657,6 +663,7 @@ class TranslatorController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
         ]);
 
         // IMAGE
@@ -665,7 +672,7 @@ class TranslatorController extends Controller
             $file = $request->file('Image');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/img/books/'), $filename);
+            $file->move(public_path('includesAdmin/img/books/'), $filename);
 
             $data['Image'] = $filename;
 
@@ -681,7 +688,7 @@ class TranslatorController extends Controller
             $file = $request->file('pdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
 
             $data['pdf_file'] = $filename;
 
@@ -745,6 +752,8 @@ class TranslatorController extends Controller
             'etudespartDateSortie' => 'nullable|date',
             'etudespartVersionImprimable' => 'nullable',
             'etudespartResumeLivre' => 'nullable',
+            'nbremots' => 'nullable',
+
             'etudespartImage' => 'nullable|image|mimes:jpg,jpeg,png',
             'etudespartpdf_file' => 'nullable|mimes:pdf',
             'categoryID' => 'required|exists:category,categoryID',
@@ -765,7 +774,7 @@ class TranslatorController extends Controller
 
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
@@ -779,11 +788,11 @@ class TranslatorController extends Controller
             $data['etudespartImage'] = 'default.jpg';
         }
         // Upload PDF
-        // Upload PDF dans ../includesAdmin/pdf/books
+        // Upload PDF dans includesAdmin/pdf/books
         if ($request->hasFile('etudesPartpdf_file')) {
             $file = $request->file('etudesPartpdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('../includesAdmin/pdf/etudesPart/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/etudesPart/'), $filename);
             $data['etudesPartpdf_file'] = $filename;
         } else {
             $data['etudesPartpdf_file'] = 'test.pdf';
@@ -803,7 +812,7 @@ class TranslatorController extends Controller
 
         // supprimer image
         if ($etudespart->etudespartImage != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $etudespart->etudespartImage);
+            $imagePath = public_path('includesAdmin/img/books/' . $etudespart->etudespartImage);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -860,6 +869,8 @@ class TranslatorController extends Controller
             'etudespartDateSortie' => 'required|date',
             'etudespartarticle' => 'nullable|string',
             'etudespartResumeLivre' => 'nullable|string',
+            'nbremots' => 'nullable',
+
             'etudespartImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -872,6 +883,7 @@ class TranslatorController extends Controller
         $etudesPart->etudespartDateSortie = $request->etudespartDateSortie;
         $etudesPart->etudespartarticle = $request->etudespartarticle;
         $etudesPart->etudespartResumeLivre = $request->etudespartResumeLivre;
+        $etudesPart->nbremots = $request->nbremots;
 
         // =========================
         // IMAGE UPDATE (SAME STYLE AS ADD)
@@ -882,7 +894,7 @@ class TranslatorController extends Controller
 
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
@@ -942,6 +954,8 @@ class TranslatorController extends Controller
             'bookspartDateSortie' => 'nullable|date',
             'bookspartVersionImprimable' => 'nullable',
             'bookspartResumeLivre' => 'nullable',
+            'nbremots' => 'nullable',
+
             'bookpartarticle' => 'nullable',
             'booksPartImage' => 'nullable|image|mimes:jpg,jpeg,png',
             'bookspartpdf_file' => 'nullable|mimes:pdf',
@@ -953,7 +967,7 @@ class TranslatorController extends Controller
         if ($request->hasFile('booksPartImage')) {
             $file = $request->file('booksPartImage');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
@@ -967,7 +981,7 @@ class TranslatorController extends Controller
         if ($request->hasFile('bookspartpdf_file')) {
             $file = $request->file('bookspartpdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
             $data['bookspartpdf_file'] = $filename;
         }
 

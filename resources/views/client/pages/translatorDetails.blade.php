@@ -157,12 +157,13 @@
 
         <div class="ltn__small-product-list-area pt-80 pb-85">
             <div class="container">
-                <div class="section-title-area text-center" style="margin-bottom: 0px;    font-size: 16px;    text-align: center;    border-right: 5px solid #442d66;    padding: 10px;    background: #fcfcf8;   color: #442d66;">
-                            <h1 class="section-title-2 border-bottom"
-                                style="  margin-bottom: 0px;font-size:20px;text-align:center; padding:10px">
-                               أحدث الترجمات
-                            </h1>
-                        </div>
+                <div class="section-title-area text-center"
+                    style="margin-bottom: 0px;    font-size: 16px;    text-align: center;    border-right: 5px solid #442d66;    padding: 10px;    background: #fcfcf8;   color: #442d66;">
+                    <h1 class="section-title-2 border-bottom"
+                        style="  margin-bottom: 0px;font-size:20px;text-align:center; padding:10px">
+                        أحدث الترجمات
+                    </h1>
+                </div>
                 <div class="row justify-content-center">
 
                     <div class="col-lg-4 col-md-6">
@@ -341,6 +342,22 @@
                             <!--  -->
                         </div>
                     </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-4"></div>
+
+                    <div class="col-md-4 text-center">
+
+                        <a href="{{ route('client.books', ['translatorID' => $translator->translatorID]) }}"
+                            class="buttonPlusIndex">
+                            المزيد <i class="fas fa-chevron-left"></i>
+                        </a>
+
+                    </div>
+
+                    <div class="col-md-4"></div>
+
                 </div>
             </div>
         </div>

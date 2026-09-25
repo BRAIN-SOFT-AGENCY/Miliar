@@ -64,7 +64,9 @@
 
                     <div class="form-group">
                       <label>عنوان المقال</label>
-                      <input type="text" name="Titre" class="form-control" required>
+                      <input type="text" name="Titre" id="Titre" class="form-control" required
+                        oninput="updateWordCount('Titre', 'TitreWordCount', this.value)">
+                      <small id="TitreWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                     </div>
                     <div class="form-group">
                       <label>القسم</label>
@@ -115,6 +117,7 @@
                 <div class="form-group">
                   <label>المقال</label>
                   <textarea id="editor" name="article"></textarea>
+                  <small id="articleWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                 </div>
 
                 <button type="button" id="generateSummary" class="btn btn-primary">
@@ -137,6 +140,12 @@
                         'rtl',
                         editor.editing.view.document.getRoot()
                       );
+                    });
+
+                    // compteur de mots pour le champ "المقال" (CKEditor)
+                    editor.model.document.on('change:data', () => {
+                      let plainText = editorInstance.getData().replace(/<[^>]*>/g, ' ');
+                      updateWordCount('article', 'articleWordCount', plainText);
                     });
 
                   });
@@ -189,6 +198,7 @@
                       .then(data => {
 
                         document.getElementById('ResumeLivre').value = data.summary;
+                        updateWordCount('ResumeLivre', 'ResumeLivreWordCount', data.summary);
 
                       })
                       .catch(error => {
@@ -216,17 +226,25 @@
                 </style>
                 <div class="form-group">
                   <label>ملخص المقال</label>
-                  <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control" required></textarea>
+                  <textarea id="ResumeLivre" name="ResumeLivre" rows="4" class="form-control" required
+                    oninput="updateWordCount('ResumeLivre', 'ResumeLivreWordCount', this.value)"></textarea>
+                  <small id="ResumeLivreWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                 </div>
 
                 <div class="form-group">
                   <label>مقتطف </label>
-                  <textarea id="extrait" name="extrait" rows="4" class="form-control" required></textarea>
+                  <textarea id="extrait" name="extrait" rows="4" class="form-control" required
+                    oninput="updateWordCount('extrait', 'extraitWordCount', this.value)"></textarea>
+                  <small id="extraitWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                 </div>
               </div>
           </div>
 
           <div class="box-footer text-center">
+            <input type="hidden" name="nbremots" id="nbremots" value="0">
+            <div class="alert alert-info" style="font-weight:bold">
+              <span id="totalWordCount">عدد الكلمات الإجمالي في هذه الصفحة هو: 0</span>
+            </div>
 
             <button type="submit" class="btn btn-success btn-lg">
               <i class="fa fa-save"></i> حفظ المقال
@@ -257,6 +275,53 @@
 
       reader.readAsDataURL(event.target.files[0]);
 
+    }
+
+    // ===== compteur de mots =====
+    let wordCounts = {
+      Titre: 0,
+      article: 0,
+      ResumeLivre: 0,
+      extrait: 0
+    };
+
+    /*  function countWords(text) {
+        text = (text || '').trim();
+        if (!text) return 0;
+        return text.split(/[\s.*,]+/).filter(Boolean).length;
+      }*/
+    function countWords(text) {
+      text = (text || '').trim();
+
+      if (!text) return 0;
+
+      // حذف HTML
+      text = text.replace(/<[^>]*>/g, ' ');
+
+      // تحويل HTML entities الشائعة إلى مسافات
+      text = text.replace(/&nbsp;|&#160;/gi, ' ');
+
+      // حذف علامات الترقيم العربية والإنجليزية
+      text = text.replace(/[.,،؛;:!?؟…"“”"'()\[\]{}<>«»\/\\|ـ_-]+/g, ' ');
+
+      // تقسيم النص حسب المسافات والأسطر
+      return text
+        .split(/\s+/u)
+        .filter(word => word.length > 0)
+        .length;
+    }
+
+    function updateWordCount(fieldKey, elementId, text) {
+      let count = countWords(text);
+      wordCounts[fieldKey] = count;
+      document.getElementById(elementId).innerText = 'عدد الكلمات هو: ' + count;
+      updateTotalWordCount();
+    }
+
+    function updateTotalWordCount() {
+      let total = wordCounts.Titre + wordCounts.article + wordCounts.ResumeLivre + wordCounts.extrait;
+      document.getElementById('totalWordCount').innerText = 'عدد الكلمات الإجمالي في هذه الصفحة هو: ' + total;
+      document.getElementById('nbremots').value = total; // 🔥 mise à jour du champ hidden
     }
 
   </script>

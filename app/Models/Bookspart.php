@@ -26,6 +26,7 @@ class Bookspart extends Model
         'categoryID',
         'booksID',
         'bookpartarticle',
+        'nbremots',
 
     ];
 

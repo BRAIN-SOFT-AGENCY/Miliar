@@ -24,6 +24,7 @@ class etudespart extends Model
         'categoryID',
         'etudespartarticle',
         'booksID',
+        'nbremots',
     ];
     public function category()
     {

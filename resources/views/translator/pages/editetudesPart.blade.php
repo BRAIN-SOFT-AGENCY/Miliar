@@ -2,6 +2,54 @@
 
 @section('content')
 <div class="content-wrapper">
+
+    <script>
+      // ===== compteur de mots (défini en tout premier, avant tout usage) =====
+      let wordCounts = {
+        Titre: 0,
+        article: 0,
+        ResumeLivre: 0
+      };
+
+      function countWords(text) {
+        text = (text || '').trim();
+
+        if (!text) return 0;
+
+        // حذف HTML
+        text = text.replace(/<[^>]*>/g, ' ');
+
+        // تحويل HTML entities الشائعة إلى مسافات
+        text = text.replace(/&nbsp;|&#160;/gi, ' ');
+
+        // حذف علامات الترقيم العربية والإنجليزية
+        text = text.replace(/[.,،؛;:!?؟…"“”"'()\[\]{}<>«»\/\\|ـ_-]+/g, ' ');
+
+        // تقسيم النص حسب المسافات والأسطر
+        return text
+          .split(/\s+/u)
+          .filter(word => word.length > 0)
+          .length;
+      }
+
+      function updateWordCount(fieldKey, elementId, text) {
+        let count = countWords(text);
+        wordCounts[fieldKey] = count;
+        let el = document.getElementById(elementId);
+        if (el) el.innerText = 'عدد الكلمات هو: ' + count;
+        updateTotalWordCount();
+      }
+
+      function updateTotalWordCount() {
+        let total = wordCounts.Titre + wordCounts.article + wordCounts.ResumeLivre;
+        let el = document.getElementById('totalWordCount');
+        if (el) el.innerText = 'عدد الكلمات الإجمالي في هذه الصفحة هو: ' + total;
+
+        let hiddenEl = document.getElementById('nbremots'); // 🔥 mise à jour du champ hidden
+        if (hiddenEl) hiddenEl.value = total;
+      }
+    </script>
+
     <section class="content-header">
         <h1><small> </small></h1>
     </section>
@@ -43,8 +91,10 @@
                                     <div class="form-group">
                                         <label>عنوان الدراسة</label>
                                         <input type="hidden" name="booksID" value="{{ $etudesPart->booksID }}" required>
-                                        <input type="text" name="etudespartTitre" class="form-control" 
-                                               value="{{ old('etudespartTitre', $etudesPart->etudespartTitre) }}" required>
+                                        <input type="text" name="etudespartTitre" id="etudespartTitre" class="form-control" 
+                                               value="{{ old('etudespartTitre', $etudesPart->etudespartTitre) }}" required
+                                               oninput="updateWordCount('Titre', 'TitreWordCount', this.value)">
+                                        <small id="TitreWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                                     </div>
 
                                     <div class="form-group">
@@ -87,6 +137,7 @@
                             <div class="form-group">
                                 <label>الدراسة</label>
                                 <textarea id="editor" name="etudespartarticle">{{ old('etudespartarticle', $etudesPart->etudespartarticle) }}</textarea>
+                                <small id="articleWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                             </div>
 
                             <!-- Bouton IA -->
@@ -94,7 +145,7 @@
                                 توليد ملخص بالذكاء الاصطناعي
                             </button>
 
-                            <!-- Scripts CKEditor + IA (identique à l'ajout) -->
+                            <!-- Scripts CKEditor + IA -->
                             <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
                             <script>
                                 let editorInstance;
@@ -105,6 +156,23 @@
                                     editor.editing.view.change(writer => {
                                         writer.setAttribute('dir', 'rtl', editor.editing.view.document.getRoot());
                                     });
+
+                                    // compteur initial (les fonctions sont déjà définies en haut de la page)
+                                    try {
+                                        let initialText = editor.getData().replace(/<[^>]*>/g, ' ');
+                                        updateWordCount('article', 'articleWordCount', initialText);
+                                    } catch (e) {
+                                        console.error('Erreur compteur initial CKEditor:', e);
+                                    }
+
+                                    // mise à jour en direct à chaque modification
+                                    editor.model.document.on('change:data', () => {
+                                        let plainText = editor.getData().replace(/<[^>]*>/g, ' ');
+                                        updateWordCount('article', 'articleWordCount', plainText);
+                                    });
+
+                                }).catch(error => {
+                                    console.error('Erreur initialisation CKEditor:', error);
                                 });
 
                                 document.getElementById('generateSummary').addEventListener('click', function () {
@@ -143,6 +211,7 @@
                                     })
                                     .then(data => {
                                         document.getElementById('etudespartResumeLivre').value = data.summary;
+                                        updateWordCount('ResumeLivre', 'ResumeLivreWordCount', data.summary);
                                     })
                                     .catch(error => {
                                         console.error(error);
@@ -166,11 +235,19 @@
                             <!-- Résumé -->
                             <div class="form-group">
                                 <label>ملخص الدراسة</label>
-                                <textarea id="etudespartResumeLivre" name="etudespartResumeLivre" rows="4" class="form-control" required>{{ old('etudespartResumeLivre', $etudesPart->etudespartResumeLivre) }}</textarea>
+                                <textarea id="etudespartResumeLivre" name="etudespartResumeLivre" rows="4" class="form-control" required
+                                    oninput="updateWordCount('ResumeLivre', 'ResumeLivreWordCount', this.value)">{{ old('etudespartResumeLivre', $etudesPart->etudespartResumeLivre) }}</textarea>
+                                <small id="ResumeLivreWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                             </div>
                         </div>
 
                         <div class="box-footer text-center">
+                            <input type="text" name="nbremots" id="nbremots" value="0">
+
+                            <div class="alert alert-info" style="font-weight:bold">
+                                <span id="totalWordCount">عدد الكلمات الإجمالي في هذه الصفحة هو: 0</span>
+                            </div>
+
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fa fa-save"></i> حفظ المسودة  
                             </button>
@@ -194,6 +271,13 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     }
+
+    // ===== initialisation au chargement (champs déjà remplis en update) =====
+    document.addEventListener('DOMContentLoaded', function () {
+        updateWordCount('Titre', 'TitreWordCount', document.getElementById('etudespartTitre').value);
+        updateWordCount('ResumeLivre', 'ResumeLivreWordCount', document.getElementById('etudespartResumeLivre').value);
+        // "article" (CKEditor) est initialisé dans le .then() de ClassicEditor.create
+    });
 </script>
 @endsection
 

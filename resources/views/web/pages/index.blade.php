@@ -1561,14 +1561,19 @@ p {
 
 
                     <div class="col-lg-4 col-md-6">
-                        <div class="row">
+                           <div class="row">
                             <div class="col-lg-12">
                                 <div class="section-title-area ltn__section-title-2--- text-center---">
                                     <h1 class="section-title-2 border-bottom"
                                         style="margin-bottom: 0px;
-                                                                                                                                                                                                                                                                                                                                                                                                                   color: #442d66;">
-                                        الأكثر
-                                        قراءة
+                                                                                                                                                                                                                                                                                                                                                                                                                    font-size: 16px;
+                                                                                                                                                                                                                                                                                                                                                                                                                    text-align: center;
+                                                                                                                                                                                                                                                                                                                                                                                                                    border-right: 5px solid #442d66;
+                                                                                                                                                                                                                                                                                                                                                                                                                    padding: 10px;
+                                                                                                                                                                                                                                                                                                                                                                                                                    background: #fcfcf8;
+                                                                                                                                                                                                                                                                                                                                                                                                                    color: #442d66;">
+                                        
+                                        الأكثر قراءة
                                     </h1>
                                 </div>
                             </div>
@@ -1754,7 +1759,7 @@ p {
 
                 <div class="stat-card featured">
                     <!--div class="icon gold"><i class="fas fa-language"></i></div-->
-                    <h3>{{ number_format($articlescountlettres) }}</h3>
+                    <h3>{{ number_format($articlescountmots) }}</h3>
                     <div class="shine"></div>
                     <p>كلمة مترجمة حتى الآن</p>
                 </div>

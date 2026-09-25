@@ -141,6 +141,24 @@
           <i class="fa fa-star"></i> <span>قائمة الشركاء</span>
         </a>
       </li>
+      <li class="treeview {{ request()->routeIs('superAdmin.pages.newsMonthly') ? 'active' : '' }}">
+        <a href="#">
+          <i class="fa fa-newspaper-o"></i>
+          <span> إدارة النشرات</span> <i class="fa fa-angle-left pull-left"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li class="{{ request()->routeIs('superAdmin.pages.newsMonthly') ? 'active' : '' }}">
+            <a href="{{ route('superAdmin.pages.newsMonthly') }}">
+              <i class="fa fa-circle-o"></i> النشرات الشهرية
+            </a>
+          </li>
+          <li class="{{ request()->routeIs('superAdmin.pages.newsweekly') ? 'active' : '' }}">
+            <a href="{{ route('superAdmin.pages.newsweekly') }}">
+              <i class="fa fa-circle-o"></i> النشرات الإسبوعية
+            </a>
+          </li>
+        </ul>
+      </li>
     </ul>
     <script>
       document.addEventListener('DOMContentLoaded', function () {

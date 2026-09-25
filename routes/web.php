@@ -10,6 +10,11 @@ use App\Http\Controllers\AuthControllerClient;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\AIController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\WordCountController;
+
+Route::get('/word-count/all', [WordCountController::class, 'countAllBooks']);
+Route::get('/word-count/all-with', [WordCountController::class, 'countAllBookscar']);
+
 
 Route::post('/generate-summary', [AIController::class, 'generateSummary']);
 // Login / Logout
@@ -261,12 +266,26 @@ Route::prefix('admin')->controller(AdminController::class)->group(function () {
 
     Route::get('/addpartnersList', 'addpartnersList')->name('superAdmin.addpartnersList');
     Route::post('/addpartnersList/store', 'storepartnersList')->name('superAdmin.addpartnersList.store');
+    Route::get('/newsMonthly', 'newsMonthly')->name('superAdmin.pages.newsMonthly');
+    Route::get('/newsMonthly/add', 'addNewsMonthly')->name('superAdmin.pages.addNewsMonthly');
+    Route::post('/newsMonthly/store', 'storeNewsMonthly')->name('superAdmin.newsMonthly.store');
+    Route::get('/newsMonthly/edit/{id}', 'editNewsMonthly')->name('superAdmin.newsMonthly.edit');
+    Route::post('/newsMonthly/update/{id}', 'updateNewsMonthly')->name('superAdmin.newsMonthly.update');
+    Route::get('/newsMonthly/delete/{id}', 'deleteNewsMonthly')->name('superAdmin.newsMonthly.delete');
+    Route::get('/newsweekly', 'newsWeekly')->name('superAdmin.pages.newsweekly');
+    Route::get('/newsweekly/add', 'addNewsWeekly')->name('superAdmin.pages.addNewsWeekly');
+    Route::post('/newsweekly/store', 'storeNewsWeekly')->name('superAdmin.newsweekly.store');
+    Route::get('/newsweekly/edit/{id}', 'editNewsWeekly')->name('superAdmin.newsweekly.edit');
+    Route::post('/newsweekly/update/{id}', 'updateNewsWeekly')->name('superAdmin.newsweekly.update');
+    Route::get('/newsweekly/delete/{id}', 'deleteNewsWeekly')->name('superAdmin.newsweekly.delete');
     Route::post('/superAdmin/books/toggle-banner', [AdminController::class, 'toggleBookOption'])
         ->name('superAdmin.books.toggleOption');
 });
 
 Route::get('/', [MiliarController::class, 'index'])->name('miliar.index');
 Route::get('/indexProp2', [MiliarController::class, 'indexProp2'])->name('miliar.indexProp2');
+Route::get('/indexPropPlus', [MiliarController::class, 'indexPropPlus'])->name('miliar.indexPropPlus');
+
 Route::get('/translatorweb', [MiliarController::class, 'translatorweb'])->name('miliar.translatorweb');
 Route::get('/translatorDetails/{id}', [MiliarController::class, 'translatorDetails'])->name('miliar.translatorDetails');
 Route::get('/books', [MiliarController::class, 'books'])->name('miliar.books');
@@ -274,6 +293,8 @@ Route::get('/wordpedia', [MiliarController::class, 'books'])->name('miliar.books
 Route::get('/books1', [MiliarController::class, 'books1'])->name('miliar.books1');
 
 Route::get('/about', [MiliarController::class, 'about'])->name('miliar.about');
+Route::get('/newsweekly', [MiliarController::class, 'newsWeekly'])->name('miliar.newsweekly');
+Route::get('/newsmonthly', [MiliarController::class, 'newsMonthly'])->name('miliar.newsmonthly');
 Route::get('/contact', [MiliarController::class, 'contact'])->name('miliar.contact');
 Route::post('/contactStore', [MiliarController::class, 'contactStore'])->name('contact.store');
 Route::post('/emailStore', [MiliarController::class, 'emailStore'])->name('email.store');

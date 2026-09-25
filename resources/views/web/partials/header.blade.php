@@ -178,7 +178,7 @@ echo $formatter->format(new DateTime());
                     </li>
                     <li class="header-icon-item" style="margin-left:3px">
 
-                      <a href="#" title="النشرية الأسبوعية">
+                      <a href="{{ route('miliar.newsweekly') }}" title="النشرية الأسبوعية">
 
                         <i class="fa-solid fa-newspaper"></i>
                       </a>
@@ -187,7 +187,7 @@ echo $formatter->format(new DateTime());
 
                     <li class="header-icon-item">
 
-                      <a href="#" title="النشرة الشهرية">
+                      <a href="{{ route('miliar.newsmonthly') }}" title="النشرة الشهرية">
 
                         <i class="fa-solid fa-calendar-days"></i>
                       </a>

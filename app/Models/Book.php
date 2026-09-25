@@ -32,6 +32,7 @@ class Book extends Model
         'extrait',
         'conversation',
         'selection',
+        'nbremots',
     ];
     public function category()
     {

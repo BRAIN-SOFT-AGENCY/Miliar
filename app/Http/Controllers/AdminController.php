@@ -13,7 +13,11 @@ use App\Models\Translator;
 use App\Models\Book;
 use App\Models\partners;
 
+use App\Models\newsmonthly;
+use App\Models\newsweekly;
+
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 class AdminController extends Controller
 {
 
@@ -63,7 +67,7 @@ class AdminController extends Controller
 
         // supprimer image
         if ($book->Image != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $book->Image);
+            $imagePath = public_path('includesAdmin/img/books/' . $book->Image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -71,7 +75,7 @@ class AdminController extends Controller
 
         // supprimer pdf
         if ($book->pdf_file) {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $book->pdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $book->pdf_file);
             if (file_exists($pdfPath)) {
                 unlink($pdfPath);
             }
@@ -112,6 +116,7 @@ class AdminController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
 
         ]);
 
@@ -123,7 +128,7 @@ class AdminController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -168,7 +173,7 @@ class AdminController extends Controller
 
         // supprimer image
         if ($book->Image != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $book->Image);
+            $imagePath = public_path('includesAdmin/img/books/' . $book->Image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -176,7 +181,7 @@ class AdminController extends Controller
 
         // supprimer pdf
         if ($book->pdf_file) {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $book->pdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $book->pdf_file);
             if (file_exists($pdfPath)) {
                 unlink($pdfPath);
             }
@@ -315,6 +320,7 @@ class AdminController extends Controller
             'selection' => 'nullable',
 
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
         ]);
 
         // Upload image
@@ -325,7 +331,7 @@ class AdminController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -385,6 +391,7 @@ class AdminController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
 
         ]);
 
@@ -396,7 +403,7 @@ class AdminController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -412,11 +419,11 @@ class AdminController extends Controller
             $data['Image'] = 'default.jpg';
         }
         // Upload PDF
-        // Upload PDF dans ../includesAdmin/pdf/books
+        // Upload PDF dans includesAdmin/pdf/books
         if ($request->hasFile('pdf_file')) {
             $file = $request->file('pdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
             $data['pdf_file'] = $filename;
         } else {
             $data['pdf_file'] = 'test.pdf';
@@ -465,6 +472,7 @@ class AdminController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
         ]);
 
         // Upload image
@@ -475,7 +483,7 @@ class AdminController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -550,7 +558,24 @@ class AdminController extends Controller
        }*/
 
     public function allBooks()
-    {
+    { //echo 'hii';die();
+        /*  $books = Book::where('status', 0)
+              ->orderBy('booksID', 'desc')
+              ->select([
+                  'booksID',
+                  'Image',
+                  'Titre',
+                  'ResumeLivre',
+                  'pdf_file',
+                  'categoryID',
+                  'translatorID',
+                  'type',
+                  'isbanner',
+                  'conversation',
+                  'selection',
+              ])
+              ->with(['category', 'translator'])
+              ->get();*/
         $books = Book::where('status', 0)
             ->orderBy('booksID', 'desc')
             ->select([
@@ -565,14 +590,17 @@ class AdminController extends Controller
                 'isbanner',
                 'conversation',
                 'selection',
+                'nbremots',
+
             ])
             ->with(['category', 'translator'])
             ->paginate(10);
-
+        // echo print_r($books);
+        // die();
         $countBooks = Book::where('isbanner', 1)->count();
         $countconversation = Book::where('conversation', 1)->count();
         $countselection = Book::where('selection', 1)->count();
-
+        //echo 'hello';die();
         return view('superAdmin.pages.allBooks', compact('books', 'countBooks', 'countconversation', 'countselection'));
     }
 
@@ -682,7 +710,7 @@ class AdminController extends Controller
 
         // supprimer image
         if ($book->Image != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $book->Image);
+            $imagePath = public_path('includesAdmin/img/books/' . $book->Image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -690,7 +718,7 @@ class AdminController extends Controller
 
         // supprimer pdf
         if ($book->pdf_file) {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $book->pdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $book->pdf_file);
             if (file_exists($pdfPath)) {
                 unlink($pdfPath);
             }
@@ -740,6 +768,8 @@ class AdminController extends Controller
             'bookspartDateSortie' => 'nullable|date',
             'bookspartVersionImprimable' => 'nullable',
             'bookspartResumeLivre' => 'nullable',
+            'nbremots' => 'nullable',
+
             'bookpartarticle' => 'nullable',
 
             'booksPartImage' => 'nullable|image|mimes:jpg,jpeg,png',
@@ -762,7 +792,7 @@ class AdminController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -778,11 +808,11 @@ class AdminController extends Controller
             $data['booksPartImage'] = 'default.jpg';
         }
         // Upload PDF
-        // Upload PDF dans ../includesAdmin/pdf/books
+        // Upload PDF dans includesAdmin/pdf/books
         if ($request->hasFile('bookspartpdf_file')) {
             $file = $request->file('bookspartpdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
             $data['bookspartpdf_file'] = $filename;
         } else {
             $data['bookspartpdf_file'] = 'test.pdf';
@@ -814,7 +844,7 @@ class AdminController extends Controller
 
         // supprimer image
         if ($book->Image != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $book->Image);
+            $imagePath = public_path('includesAdmin/img/books/' . $book->Image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -822,7 +852,7 @@ class AdminController extends Controller
 
         // supprimer pdf
         if ($book->pdf_file) {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $book->pdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $book->pdf_file);
             if (file_exists($pdfPath)) {
                 unlink($pdfPath);
             }
@@ -864,6 +894,7 @@ class AdminController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
 
         ]);
 
@@ -875,7 +906,7 @@ class AdminController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -967,6 +998,8 @@ class AdminController extends Controller
             'etudespartDateSortie' => 'nullable|date',
             'etudespartVersionImprimable' => 'nullable',
             'etudespartResumeLivre' => 'nullable',
+            'nbremots' => 'nullable',
+
             'etudespartImage' => 'nullable|image|mimes:jpg,jpeg,png',
             'etudespartpdf_file' => 'nullable|mimes:pdf',
             'categoryID' => 'required|exists:category,categoryID',
@@ -987,7 +1020,7 @@ class AdminController extends Controller
 
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
@@ -1001,11 +1034,11 @@ class AdminController extends Controller
             $data['etudespartImage'] = 'default.jpg';
         }
         // Upload PDF
-        // Upload PDF dans ../includesAdmin/pdf/books
+        // Upload PDF dans includesAdmin/pdf/books
         if ($request->hasFile('etudesPartpdf_file')) {
             $file = $request->file('etudesPartpdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('../includesAdmin/pdf/etudesPart/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/etudesPart/'), $filename);
             $data['etudesPartpdf_file'] = $filename;
         } else {
             $data['etudesPartpdf_file'] = 'test.pdf';
@@ -1025,7 +1058,7 @@ class AdminController extends Controller
 
         // supprimer image
         if ($etudespart->etudespartImage != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $etudespart->etudespartImage);
+            $imagePath = public_path('includesAdmin/img/books/' . $etudespart->etudespartImage);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -1080,6 +1113,8 @@ class AdminController extends Controller
             'etudespartDateSortie' => 'required|date',
             'etudespartarticle' => 'nullable|string',
             'etudespartResumeLivre' => 'nullable|string',
+            'nbremots' => 'nullable',
+
             'etudespartImage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -1092,6 +1127,8 @@ class AdminController extends Controller
         $etudesPart->etudespartDateSortie = $request->etudespartDateSortie;
         $etudesPart->etudespartarticle = $request->etudespartarticle;
         $etudesPart->etudespartResumeLivre = $request->etudespartResumeLivre;
+        $etudesPart->nbremots = $request->nbremots;
+
 
         // =========================
         // IMAGE UPDATE (SAME STYLE AS ADD)
@@ -1102,7 +1139,7 @@ class AdminController extends Controller
 
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
@@ -1164,6 +1201,8 @@ class AdminController extends Controller
             'bookspartDateSortie' => 'nullable|date',
             'bookspartVersionImprimable' => 'nullable',
             'bookspartResumeLivre' => 'nullable',
+            'nbremots' => 'nullable',
+
             'bookpartarticle' => 'nullable',
             'booksPartImage' => 'nullable|image|mimes:jpg,jpeg,png',
             'bookspartpdf_file' => 'nullable|mimes:pdf',
@@ -1175,7 +1214,7 @@ class AdminController extends Controller
         if ($request->hasFile('booksPartImage')) {
             $file = $request->file('booksPartImage');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $destinationPath = public_path('../includesAdmin/img/books');
+            $destinationPath = public_path('includesAdmin/img/books');
 
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
@@ -1189,7 +1228,7 @@ class AdminController extends Controller
         if ($request->hasFile('bookspartpdf_file')) {
             $file = $request->file('bookspartpdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
             $data['bookspartpdf_file'] = $filename;
         }
 
@@ -1206,7 +1245,7 @@ class AdminController extends Controller
 
         // supprimer image
         if (!empty($Bookspart->booksPartImage) && $Bookspart->booksPartImage !== 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/books/' . $Bookspart->booksPartImage);
+            $imagePath = public_path('includesAdmin/img/books/' . $Bookspart->booksPartImage);
 
             if (is_file($imagePath)) {
                 unlink($imagePath);
@@ -1215,7 +1254,7 @@ class AdminController extends Controller
 
         // supprimer pdf
         if (!empty($Bookspart->bookspartpdf_file) && $Bookspart->bookspartpdf_file !== 'test.pdf') {
-            $pdfPath = public_path('../includesAdmin/pdf/books/' . $Bookspart->bookspartpdf_file);
+            $pdfPath = public_path('includesAdmin/pdf/books/' . $Bookspart->bookspartpdf_file);
 
             if (is_file($pdfPath)) {
                 unlink($pdfPath);
@@ -1259,6 +1298,7 @@ class AdminController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
 
         ]);
 
@@ -1268,7 +1308,7 @@ class AdminController extends Controller
             $file = $request->file('Image');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/img/books/'), $filename);
+            $file->move(public_path('includesAdmin/img/books/'), $filename);
 
             $data['Image'] = $filename;
 
@@ -1284,7 +1324,7 @@ class AdminController extends Controller
             $file = $request->file('pdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
 
             $data['pdf_file'] = $filename;
 
@@ -1339,6 +1379,7 @@ class AdminController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
 
         ]);
 
@@ -1348,7 +1389,7 @@ class AdminController extends Controller
             $file = $request->file('Image');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/img/books/'), $filename);
+            $file->move(public_path('includesAdmin/img/books/'), $filename);
 
             $data['Image'] = $filename;
 
@@ -1364,7 +1405,7 @@ class AdminController extends Controller
             $file = $request->file('pdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
 
             $data['pdf_file'] = $filename;
 
@@ -1423,6 +1464,7 @@ class AdminController extends Controller
             'conversation' => 'nullable',
             'selection' => 'nullable',
             'extrait' => 'nullable',
+            'nbremots' => 'nullable',
 
         ]);
 
@@ -1432,7 +1474,7 @@ class AdminController extends Controller
             $file = $request->file('Image');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/img/books/'), $filename);
+            $file->move(public_path('includesAdmin/img/books/'), $filename);
 
             $data['Image'] = $filename;
 
@@ -1448,7 +1490,7 @@ class AdminController extends Controller
             $file = $request->file('pdf_file');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $file->move(public_path('../includesAdmin/pdf/books/'), $filename);
+            $file->move(public_path('includesAdmin/pdf/books/'), $filename);
 
             $data['pdf_file'] = $filename;
 
@@ -1502,7 +1544,7 @@ class AdminController extends Controller
               $filename = time() . '_' . $file->getClientOriginalName();
 
               // chemin vers ton dossier cible
-              $destinationPath = public_path('../includesAdmin/img/translator');
+              $destinationPath = public_path('includesAdmin/img/translator');
 
               // créer le dossier s'il n'existe pas
               if (!file_exists($destinationPath)) {
@@ -1531,7 +1573,7 @@ class AdminController extends Controller
               $filename = time() . '_' . $file->getClientOriginalName();
 
               // chemin vers ton dossier cible
-              $destinationPath = public_path('../includesAdmin/img/part');
+              $destinationPath = public_path('includesAdmin/img/part');
 
               // créer le dossier s'il n'existe pas
               if (!file_exists($destinationPath)) {
@@ -1595,7 +1637,7 @@ class AdminController extends Controller
 
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $destinationPath = public_path('../includesAdmin/img/translator');
+            $destinationPath = public_path('includesAdmin/img/translator');
 
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
@@ -1632,7 +1674,7 @@ class AdminController extends Controller
 
 
             // dossier part
-            $partPath = public_path('../includesAdmin/img/part');
+            $partPath = public_path('includesAdmin/img/part');
 
 
             if (!file_exists($partPath)) {
@@ -1641,7 +1683,7 @@ class AdminController extends Controller
 
 
             // Copier l'image vers part
-            $source = public_path('../includesAdmin/img/translator/' . $data['translatorPicture']);
+            $source = public_path('includesAdmin/img/translator/' . $data['translatorPicture']);
 
             $destination = $partPath . '/' . $data['translatorPicture'];
 
@@ -1658,20 +1700,26 @@ class AdminController extends Controller
 
         }
 
-        // Email data
-        $emailData = [
-            'email' => $data['translatorEmail'],
-            'password' => '123456',
-            'link' => 'https://maxu123.com/miliar/login',
-            'name' => $data['translatorfirstName'] . ' ' . $data['translatorLastName']
-        ];
-        // dd($emailData);
+        if (!empty($data['translatorEmail']) && filter_var($data['translatorEmail'], FILTER_VALIDATE_EMAIL)) {
+            $emailData = [
+                'email' => $data['translatorEmail'],
+                'password' => '123456',
+                'link' => 'https://miliar.org/login',
+                'name' => $data['translatorfirstName'] . ' ' . $data['translatorLastName']
+            ];
 
-        // Send email
-        Mail::send('emails.translator_welcome', $emailData, function ($message) use ($emailData) {
-            $message->to($emailData['email'])
-                ->subject('مرحبًا بك في منطقة المترجم الخاصة بك');
-        });
+            try {
+                Mail::send('emails.translator_welcome', $emailData, function ($message) use ($emailData) {
+                    $message->to($emailData['email'])
+                        ->subject('مرحبًا بك في منطقة المترجم الخاصة بك');
+                });
+            } catch (\Throwable $exception) {
+                Log::error('Translator welcome email failed', [
+                    'email' => $data['translatorEmail'],
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
         return redirect()
             ->route('superAdmin.pages.translatorList')
             ->with('success', 'translator ajouté avec succès !');
@@ -1682,7 +1730,7 @@ class AdminController extends Controller
 
         // supprimer image
         if ($translator->translatorPicture != 'default.jpg') {
-            $imagePath = public_path('../includesAdmin/img/translator/' . $translator->translatorPicture);
+            $imagePath = public_path('includesAdmin/img/translator/' . $translator->translatorPicture);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
@@ -1702,28 +1750,32 @@ class AdminController extends Controller
         $translator->save();
 
 
-        // Email data
-        $emailData = [
-            'email' => $translator->translatorEmail,
-            'password' => '123456',
-            'link' => 'https://maxu123.com/miliar/login',
-            'name' => $translator->translatorfirstName . ' ' . $translator->translatorLastName
-        ];
+        if (!empty($translator->translatorEmail) && filter_var($translator->translatorEmail, FILTER_VALIDATE_EMAIL)) {
+            $emailData = [
+                'email' => $translator->translatorEmail,
+                'password' => '123456',
+                'link' => 'https://miliar.org/login',
+                'name' => $translator->translatorfirstName . ' ' . $translator->translatorLastName
+            ];
 
-
-        // Send email
-        Mail::send('emails.translator_welcome', $emailData, function ($message) use ($emailData) {
-
-            $message->to($emailData['email'])
-                ->subject('مرحبًا بك في منطقة المترجم الخاصة بك');
-
-        });
+            try {
+                Mail::send('emails.translator_welcome', $emailData, function ($message) use ($emailData) {
+                    $message->to($emailData['email'])
+                        ->subject('مرحبًا بك في منطقة المترجم الخاصة بك');
+                });
+            } catch (\Throwable $exception) {
+                Log::error('Translator welcome email failed', [
+                    'translator_id' => $translator->translatorID,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
 
         if ($translator->partner == 1) {
 
 
             // dossier part
-            $partPath = public_path('../includesAdmin/img/part');
+            $partPath = public_path('includesAdmin/img/part');
 
 
             if (!file_exists($partPath)) {
@@ -1732,7 +1784,7 @@ class AdminController extends Controller
 
 
             // Copier l'image vers part
-            $source = public_path('../includesAdmin/img/translator/' . $translator->translatorPicture);
+            $source = public_path('includesAdmin/img/translator/' . $translator->translatorPicture);
 
             $destination = $partPath . '/' . $translator->translatorPicture;
 
@@ -1836,7 +1888,7 @@ class AdminController extends Controller
             $filename = time() . '_' . $file->getClientOriginalName();
 
             // chemin vers ton dossier cible
-            $destinationPath = public_path('../includesAdmin/img/part');
+            $destinationPath = public_path('includesAdmin/img/part');
 
             // créer le dossier s'il n'existe pas
             if (!file_exists($destinationPath)) {
@@ -1855,6 +1907,249 @@ class AdminController extends Controller
         partners::create($data);
 
         return redirect()->route('superAdmin.partnersList')->with('success', ' الشريك ajouté avec succès !');
+    }
+
+
+    public function newsMonthly()
+    {
+        $newsMonthly = newsmonthly::orderByDesc('year')
+            ->orderByDesc('month')
+            ->orderByDesc('idnewsmonthly')
+            ->get();
+
+        return view('superAdmin.pages.newsMonthly', compact('newsMonthly'));
+    }
+
+    public function addNewsMonthly()
+    {
+        return view('superAdmin.pages.addNewsMonthly');
+    }
+    public function storeNewsMonthly(Request $request)
+    {
+        $data = $request->validate([
+            'year' => 'required|integer|digits:4|min:2000|max:2100',
+            'month' => 'required|integer|between:1,12',
+            'title' => 'required|string|max:255',
+            'picture' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'pdf' => 'required|file|mimes:pdf|max:20480',
+        ]);
+
+        if ($request->hasFile('picture')) {
+            $file = $request->file('picture');
+            $picturePath = base_path('includesAdmin/img/monthly');
+
+            if (!file_exists($picturePath)) {
+                mkdir($picturePath, 0775, true);
+            }
+
+            $filename = uniqid('monthly_', true) . '.' . $file->getClientOriginalExtension();
+            $file->move($picturePath, $filename);
+            $data['picture'] = $filename;
+        }
+
+        if ($request->hasFile('pdf')) {
+            $file = $request->file('pdf');
+            $pdfPath = base_path('includesAdmin/pdf/monthly');
+
+            if (!file_exists($pdfPath)) {
+                mkdir($pdfPath, 0775, true);
+            }
+
+            $filename = uniqid('monthly_', true) . '.pdf';
+            $file->move($pdfPath, $filename);
+            $data['pdf'] = $filename;
+        }
+
+        NewsMonthly::create($data);
+
+        return redirect()
+            ->route('superAdmin.pages.newsMonthly')
+            ->with('success', 'النشرة الشهرية أضيفت بنجاح');
+    }
+    /*  public function storeNewsMonthly(Request $request)
+      {
+          $data = $request->validate(['year' => 'required|integer|digits:4|min:2000|max:2100', 'month' => 'required|integer|between:1,12', 'title' => 'required|string|max:255', 'picture' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120', 'pdf' => 'required|file|mimes:pdf|max:20480',]);
+          if ($request->hasFile('picture')) {
+              $file = $request->file('picture');
+              $filename = time() . '_' . $file->getClientOriginalName();
+              $destinationPath = base_path('includesAdmin/img/monthly');
+              if (!file_exists($destinationPath)) {
+                  mkdir($destinationPath, 0775, true);
+              }
+              $file->move($destinationPath, $filename);
+              $data['picture'] = $filename;
+          }
+          if ($request->hasFile('pdf')) {
+              $file = $request->file('pdf');
+              $filename = time() . '_' . $file->getClientOriginalName();
+              $destinationPath = base_path('includesAdmin/pdf/monthly');
+              if (!file_exists($destinationPath)) {
+                  mkdir($destinationPath, 0775, true);
+              }
+              $file->move($destinationPath, $filename);
+              $data['pdf'] = $filename;
+          }
+          NewsMonthly::create($data);
+          return redirect()->route('superAdmin.pages.newsMonthly')->with('success', 'النشرة الشهرية أضيفت بنجاح');
+      }*/
+    public function editNewsMonthly($id)
+    {
+        $newsMonthly = newsmonthly::findOrFail($id);
+
+        return view('superAdmin.pages.editNewsMonthly', compact('newsMonthly'));
+    }
+
+    public function updateNewsMonthly(Request $request, $id)
+    {
+        $newsMonthly = newsmonthly::findOrFail($id);
+        $data = $request->validate(['year' => 'required|integer|digits:4|min:2000|max:2100', 'month' => 'required|integer|between:1,12', 'title' => 'required|string|max:255', 'picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', 'pdf' => 'nullable|file|mimes:pdf|max:20480',]);
+        if ($request->hasFile('picture')) {
+            $picturePath = base_path('includesAdmin/img/monthly');
+            if (!is_dir($picturePath)) {
+                mkdir($picturePath, 0775, true);
+            }
+            $picture = $request->file('picture');
+            $pictureName = uniqid('monthly_', true) . '.' . $picture->getClientOriginalExtension();
+            $picture->move($picturePath, $pictureName);
+            $data['picture'] = $pictureName;
+            if (!empty($newsMonthly->picture)) {
+                $oldPicturePath = $picturePath . DIRECTORY_SEPARATOR . $newsMonthly->picture;
+                if (is_file($oldPicturePath)) {
+                    unlink($oldPicturePath);
+                }
+            }
+        }
+        if ($request->hasFile('pdf')) {
+            $pdfPath = base_path('includesAdmin/pdf/monthly');
+            if (!is_dir($pdfPath)) {
+                mkdir($pdfPath, 0775, true);
+            }
+            $pdf = $request->file('pdf');
+            $pdfName = uniqid('monthly_', true) . '.pdf';
+            $pdf->move($pdfPath, $pdfName);
+            $data['pdf'] = $pdfName;
+            if (!empty($newsMonthly->pdf)) {
+                $oldPdfPath = $pdfPath . DIRECTORY_SEPARATOR . $newsMonthly->pdf;
+                if (is_file($oldPdfPath)) {
+                    unlink($oldPdfPath);
+                }
+            }
+        }
+        $newsMonthly->update($data);
+        return redirect()->route('superAdmin.pages.newsMonthly')->with('success', 'النشرة الشهرية عُدّلت بنجاح');
+    }
+
+    public function deleteNewsMonthly($id)
+    {
+        $newsMonthly = newsmonthly::findOrFail($id);
+        // $pdfPath = public_path('includesAdmin/pdf/monthly/' . $newsMonthly->pdf);
+        $pdfPath = public_path('includesAdmin/pdf/monthly/' . $newsMonthly->pdf);
+
+        if (is_file($pdfPath)) {
+            unlink($pdfPath);
+        }
+
+        $newsMonthly->delete();
+
+        return redirect()->route('superAdmin.pages.newsMonthly')
+            ->with('success', 'النشرة الشهرية حُذفت بنجاح');
+    }
+
+    public function newsWeekly()
+    {
+        $newsWeekly = newsweekly::orderByDesc('year')
+            ->orderByDesc('month')
+            ->orderByDesc('week')
+            ->orderByDesc('idnewsweekly')
+            ->get();
+
+        return view('superAdmin.pages.newsweekly', compact('newsWeekly'));
+    }
+
+    public function addNewsWeekly()
+    {
+        return view('superAdmin.pages.addNewsWeekly');
+    }
+    public function storeNewsWeekly(Request $request)
+    {
+        $data = $request->validate(['year' => 'required|integer|digits:4|min:2000|max:2100', 'month' => 'required|integer|between:1,12', 'week' => 'required|integer|between:1,5', 'title' => 'required|string|max:255', 'picture' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120', 'pdf' => 'required|file|mimes:pdf|max:20480',]);
+        $picturePath = base_path('includesAdmin/img/weekly');
+        if (!is_dir($picturePath)) {
+            mkdir($picturePath, 0775, true);
+        }
+        $picture = $request->file('picture');
+        $pictureName = uniqid('weekly_', true) . '.' . $picture->getClientOriginalExtension();
+        $picture->move($picturePath, $pictureName);
+        $data['picture'] = $pictureName;
+        $pdfPath = base_path('includesAdmin/pdf/weekly');
+        if (!is_dir($pdfPath)) {
+            mkdir($pdfPath, 0775, true);
+        }
+        $pdf = $request->file('pdf');
+        $pdfName = uniqid('weekly_', true) . '.pdf';
+        $pdf->move($pdfPath, $pdfName);
+        $data['pdf'] = $pdfName;
+        newsweekly::create($data);
+        return redirect()->route('superAdmin.pages.newsweekly')->with('success', 'النشرة الأسبوعية أضيفت بنجاح');
+    }
+    public function editNewsWeekly($id)
+    {
+        $newsWeekly = newsweekly::findOrFail($id);
+
+        return view('superAdmin.pages.editNewsWeekly', compact('newsWeekly'));
+    }
+    public function updateNewsWeekly(Request $request, $id)
+    {
+        $newsWeekly = newsweekly::findOrFail($id);
+        $data = $request->validate(['year' => 'required|integer|digits:4|min:2000|max:2100', 'month' => 'required|integer|between:1,12', 'week' => 'required|integer|between:1,5', 'title' => 'required|string|max:255', 'picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', 'pdf' => 'nullable|file|mimes:pdf|max:20480',]);
+        if ($request->hasFile('picture')) {
+            $picturePath = base_path('includesAdmin/img/weekly');
+            if (!is_dir($picturePath)) {
+                mkdir($picturePath, 0775, true);
+            }
+            $picture = $request->file('picture');
+            $pictureName = uniqid('weekly_', true) . '.' . $picture->getClientOriginalExtension();
+            $picture->move($picturePath, $pictureName);
+            $data['picture'] = $pictureName;
+            if (!empty($newsWeekly->picture)) {
+                $oldPicturePath = $picturePath . DIRECTORY_SEPARATOR . $newsWeekly->picture;
+                if (is_file($oldPicturePath)) {
+                    unlink($oldPicturePath);
+                }
+            }
+        }
+        if ($request->hasFile('pdf')) {
+            $pdfPath = base_path('includesAdmin/pdf/weekly');
+            if (!is_dir($pdfPath)) {
+                mkdir($pdfPath, 0775, true);
+            }
+            $pdf = $request->file('pdf');
+            $pdfName = uniqid('weekly_', true) . '.pdf';
+            $pdf->move($pdfPath, $pdfName);
+            $data['pdf'] = $pdfName;
+            if (!empty($newsWeekly->pdf)) {
+                $oldPdfPath = $pdfPath . DIRECTORY_SEPARATOR . $newsWeekly->pdf;
+                if (is_file($oldPdfPath)) {
+                    unlink($oldPdfPath);
+                }
+            }
+        }
+        $newsWeekly->update($data);
+        return redirect()->route('superAdmin.pages.newsweekly')->with('success', 'النشرة الأسبوعية عُدّلت بنجاح');
+    }
+    public function deleteNewsWeekly($id)
+    {
+        $newsWeekly = newsweekly::findOrFail($id);
+        $pdfPath = public_path('includesAdmin/pdf/weekly/' . $newsWeekly->pdf);
+
+        if (is_file($pdfPath)) {
+            unlink($pdfPath);
+        }
+
+        $newsWeekly->delete();
+
+        return redirect()->route('superAdmin.pages.newsweekly')
+            ->with('success', 'النشرة الأسبوعية حُذفت بنجاح');
     }
 
 

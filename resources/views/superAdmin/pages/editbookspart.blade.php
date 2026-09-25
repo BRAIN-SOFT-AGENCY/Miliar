@@ -3,6 +3,54 @@
 @section('content')
 <div class="content-wrapper">
 
+    <script>
+      // ===== compteur de mots (défini en tout premier, avant tout usage) =====
+      let wordCounts = {
+        Titre: 0,
+        article: 0,
+        ResumeLivre: 0
+      };
+
+      function countWords(text) {
+      text = (text || '').trim();
+
+      if (!text) return 0;
+
+      // حذف HTML
+      text = text.replace(/<[^>]*>/g, ' ');
+
+      // تحويل HTML entities الشائعة إلى مسافات
+      text = text.replace(/&nbsp;|&#160;/gi, ' ');
+
+      // حذف علامات الترقيم العربية والإنجليزية
+      text = text.replace(/[.,،؛;:!?؟…"“”"'()\[\]{}<>«»\/\\|ـ_-]+/g, ' ');
+
+      // تقسيم النص حسب المسافات والأسطر
+      return text
+        .split(/\s+/u)
+        .filter(word => word.length > 0)
+        .length;
+    }
+
+
+      function updateWordCount(fieldKey, elementId, text) {
+        let count = countWords(text);
+        wordCounts[fieldKey] = count;
+        let el = document.getElementById(elementId);
+        if (el) el.innerText = 'عدد الكلمات هو: ' + count;
+        updateTotalWordCount();
+      }
+
+      function updateTotalWordCount() {
+  let total = wordCounts.Titre + wordCounts.article + wordCounts.ResumeLivre;
+  let el = document.getElementById('totalWordCount');
+  if (el) el.innerText = 'عدد الكلمات الإجمالي في هذه الصفحة هو: ' + total;
+
+  let hiddenEl = document.getElementById('nbremots'); // 🔥 mise à jour du champ hidden
+  if (hiddenEl) hiddenEl.value = total;
+}
+    </script>
+
     <section class="content-header">
         <h1><small>تعديل جزء الكتاب</small></h1>
     </section>
@@ -62,9 +110,12 @@
 
                                         <input type="text"
                                                name="booksPartTitre"
+                                               id="booksPartTitre"
                                                class="form-control"
                                                value="{{ $bookspart->booksPartTitre }}"
-                                               required>
+                                               required
+                                               oninput="updateWordCount('Titre', 'TitreWordCount', this.value)">
+                                        <small id="TitreWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                                     </div>
 
                                     <div class="form-group">
@@ -126,6 +177,7 @@
   <div class="form-group">
                   <label>الكتاب</label>
                   <textarea id="editor" name="bookpartarticle">{{ $bookspart->bookpartarticle }}</textarea>
+                  <small id="articleWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                 </div>
 
                 <button type="button" id="generateSummary" class="btn btn-primary">
@@ -150,6 +202,22 @@
                       );
                     });
 
+                    // compteur initial (les fonctions sont déjà définies en haut de la page)
+                    try {
+                      let initialText = editor.getData().replace(/<[^>]*>/g, ' ');
+                      updateWordCount('article', 'articleWordCount', initialText);
+                    } catch (e) {
+                      console.error('Erreur compteur initial CKEditor:', e);
+                    }
+
+                    // mise à jour en direct à chaque modification
+                    editor.model.document.on('change:data', () => {
+                      let plainText = editor.getData().replace(/<[^>]*>/g, ' ');
+                      updateWordCount('article', 'articleWordCount', plainText);
+                    });
+
+                  }).catch(error => {
+                    console.error('Erreur initialisation CKEditor:', error);
                   });
 
                   // bouton IA
@@ -200,6 +268,7 @@
                       .then(data => {
 
                         document.getElementById('bookspartResumeLivre').value = data.summary;
+                        updateWordCount('ResumeLivre', 'ResumeLivreWordCount', data.summary);
 
                       })
                       .catch(error => {
@@ -228,7 +297,9 @@
                 <div class="form-group">
                   <label>ملخص الكتاب</label>
                   <textarea id="bookspartResumeLivre" name="bookspartResumeLivre" rows="4"
-                    class="form-control" required>{{ $bookspart->bookspartResumeLivre }}</textarea>
+                    class="form-control" required
+                    oninput="updateWordCount('ResumeLivre', 'ResumeLivreWordCount', this.value)">{{ $bookspart->bookspartResumeLivre }}</textarea>
+                  <small id="ResumeLivreWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                 </div>
                             <div class="form-group">
                                 <label>رفع ملف PDF</label>
@@ -249,6 +320,11 @@
                         </div>
 
                         <div class="box-footer text-center">
+                <input type="hidden" name="nbremots" id="nbremots" value="0">
+
+                            <div class="alert alert-info" style="font-weight:bold">
+                              <span id="totalWordCount">عدد الكلمات الإجمالي في هذه الصفحة هو: 0</span>
+                            </div>
 
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fa fa-save"></i> حفظ المسودة
@@ -280,20 +356,13 @@ function preview(event) {
 
     reader.readAsDataURL(event.target.files[0]);
 }
-</script>
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
-<script>
-let editorInstance;
-
-ClassicEditor.create(document.querySelector('#editor'), {
-    language: 'ar',
-}).then(editor => {
-    editorInstance = editor;
-
-    editor.editing.view.change(writer => {
-        writer.setAttribute('dir', 'rtl', editor.editing.view.document.getRoot());
-    });
+// ===== initialisation au chargement (champs déjà remplis en update) =====
+document.addEventListener('DOMContentLoaded', function () {
+  updateWordCount('Titre', 'TitreWordCount', document.getElementById('booksPartTitre').value);
+  updateWordCount('ResumeLivre', 'ResumeLivreWordCount', document.getElementById('bookspartResumeLivre').value);
+  // "article" (CKEditor) est initialisé dans le .then() de ClassicEditor.create plus haut,
+  // une fois l'éditeur réellement chargé
 });
 </script>
 @endsection

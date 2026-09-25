@@ -2,6 +2,52 @@
 
 @section('content')
   <div class="content-wrapper">
+
+    <script>
+      // ===== compteur de mots (défini en tout premier, avant tout usage) =====
+      let wordCounts = {
+        Titre: 0,
+        article: 0,
+        ResumeLivre: 0
+      };
+
+      function countWords(text) {
+        text = (text || '').trim();
+
+        if (!text) return 0;
+
+        // حذف HTML
+        text = text.replace(/<[^>]*>/g, ' ');
+
+        // تحويل HTML entities الشائعة إلى مسافات
+        text = text.replace(/&nbsp;|&#160;/gi, ' ');
+
+        // حذف علامات الترقيم العربية والإنجليزية
+        text = text.replace(/[.,،؛;:!?؟…"“”"'()\[\]{}<>«»\/\\|ـ_-]+/g, ' ');
+
+        // تقسيم النص حسب المسافات والأسطر
+        return text
+          .split(/\s+/u)
+          .filter(word => word.length > 0)
+          .length;
+      }
+
+
+      function updateWordCount(fieldKey, elementId, text) {
+        let count = countWords(text);
+        wordCounts[fieldKey] = count;
+        let el = document.getElementById(elementId);
+        if (el) el.innerText = 'عدد الكلمات هو: ' + count;
+        updateTotalWordCount();
+      }
+
+      function updateTotalWordCount() {
+        let total = wordCounts.Titre + wordCounts.article + wordCounts.ResumeLivre; // 🔥 extrait retiré
+        document.getElementById('totalWordCount').innerText = 'عدد الكلمات الإجمالي في هذه الصفحة هو: ' + total;
+        document.getElementById('nbremots').value = total;
+      }
+    </script>
+
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
@@ -71,7 +117,9 @@
                       <label>عنوان الدراسة</label>
                       <input type="hidden" name="booksID" class="form-control" value="{{ $booksID }}" required>
 
-                      <input type="text" name="etudespartTitre" class="form-control" required>
+                      <input type="text" name="etudespartTitre" id="etudespartTitre" class="form-control" required
+                        oninput="updateWordCount('Titre', 'TitreWordCount', this.value)">
+                      <small id="TitreWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                     </div>
                     <div class="form-group">
                       <label>القسم</label>
@@ -114,6 +162,7 @@
                 <div class="form-group">
                   <label>الدراسة</label>
                   <textarea id="editor" name="etudespartarticle"></textarea>
+                  <small id="articleWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                 </div>
 
                 <button type="button" id="generateSummary" class="btn btn-primary">
@@ -139,6 +188,22 @@
                       );
                     });
 
+                    // compteur initial (les fonctions sont déjà définies en haut de la page)
+                    try {
+                      let initialText = editor.getData().replace(/<[^>]*>/g, ' ');
+                      updateWordCount('article', 'articleWordCount', initialText);
+                    } catch (e) {
+                      console.error('Erreur compteur initial CKEditor:', e);
+                    }
+
+                    // mise à jour en direct à chaque modification
+                    editor.model.document.on('change:data', () => {
+                      let plainText = editor.getData().replace(/<[^>]*>/g, ' ');
+                      updateWordCount('article', 'articleWordCount', plainText);
+                    });
+
+                  }).catch(error => {
+                    console.error('Erreur initialisation CKEditor:', error);
                   });
 
                   // bouton IA
@@ -189,6 +254,7 @@
                       .then(data => {
 
                         document.getElementById('etudespartResumeLivre').value = data.summary;
+                        updateWordCount('ResumeLivre', 'ResumeLivreWordCount', data.summary);
 
                       })
                       .catch(error => {
@@ -216,14 +282,20 @@
                 </style>
                 <div class="form-group">
                   <label>ملخص الدراسة</label>
-                  <textarea id="etudespartResumeLivre" name="etudespartResumeLivre" rows="4" class="form-control"
-                    required></textarea>
+                  <textarea id="etudespartResumeLivre" name="etudespartResumeLivre" rows="4" class="form-control" required
+                    oninput="updateWordCount('ResumeLivre', 'ResumeLivreWordCount', this.value)"></textarea>
+                  <small id="ResumeLivreWordCount" class="text-muted d-block mt-1">عدد الكلمات هو: 0</small>
                 </div>
 
 
               </div>
 
               <div class="box-footer text-center">
+                <input type="hidden" name="nbremots" id="nbremots" value="0">
+
+                <div class="alert alert-info" style="font-weight:bold">
+                  <span id="totalWordCount">عدد الكلمات الإجمالي في هذه الصفحة هو: 0</span>
+                </div>
 
                 <button type="submit" class="btn btn-success btn-lg">
                   <i class="fa fa-save"></i> حفظ جزء الدراسة

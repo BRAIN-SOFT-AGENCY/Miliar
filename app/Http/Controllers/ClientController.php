@@ -124,21 +124,53 @@ class ClientController extends Controller
             ->take(1)->get();
         $translatorscount = Translator::where('translatorStatus', 1)->count();
         $partnerscount = partners::count();
-        $articlescountlettres = 0;
+        // calcul de nbre de mots
+        $articlescountmots = 0;
+        $countWords = static function (?string $html): int {
+            if ($html === null || $html === '') {
+                return 0;
+            }
 
+            $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $words = preg_match_all('/[\p{L}\p{N}]+(?:[\x{2019}\'-][\p{L}\p{N}]+)*/u', $text);
+
+            return $words === false ? 0 : $words;
+        };
         Book::where('status', 0)
-            ->select('booksID', 'article')
-            ->chunkById(100, function ($books) use (&$articlescountlettres) {
+            ->select('booksID', 'type', 'article', 'ResumeLivre', 'extrait', 'Titre')
+            ->chunkById(100, function ($books) use (&$articlescountmots, $countWords) {
+                $bookIds = $books->pluck('booksID');
+                $bookParts = Bookspart::whereIn('booksID', $bookIds)
+                    ->get(['booksID', 'booksPartTitre', 'bookspartResumeLivre', 'bookpartarticle'])
+                    ->groupBy('booksID');
+                $studyParts = etudespart::whereIn('booksID', $bookIds)
+                    ->get(['booksID', 'etudespartTitre', 'etudespartarticle', 'etudespartResumeLivre'])
+                    ->groupBy('booksID');
 
                 foreach ($books as $book) {
+                    foreach (['article', 'ResumeLivre', 'extrait', 'Titre'] as $field) {
+                        $articlescountmots += $countWords($book->{$field});
+                    }
 
-                    $text = strip_tags($book->article);
-                    $text = preg_replace('/[^\p{L}\p{N}]/u', '', $text);
+                    $parts = (int) $book->type === 0
+                        ? $bookParts->get($book->booksID, collect())
+                        : ((int) $book->type === 2
+                            ? $studyParts->get($book->booksID, collect())
+                            : collect());
 
-                    $articlescountlettres += mb_strlen($text, 'UTF-8');
+                    foreach ($parts as $part) {
+                        $fields = (int) $book->type === 0
+                            ? ['booksPartTitre', 'bookspartResumeLivre', 'bookpartarticle']
+                            : ['etudespartTitre', 'etudespartarticle', 'etudespartResumeLivre'];
+
+                        foreach ($fields as $field) {
+                            $articlescountmots += $countWords($part->{$field});
+                        }
+                    }
                 }
 
             }, 'booksID');
+        $articlescountmots += 6000000;
         $categorycount = Category::count();
         $bookscount = Book::count();
         $mainCounter = statistique::value('statistiqueBooksCount');
@@ -210,7 +242,7 @@ class ClientController extends Controller
             ->get();
         $partners = partners::orderBy('partnersID', 'desc')->get();
 
-        return view('client.pages.index', compact('bookscount', 'articlescountlettres', 'partnerscount', 'partners', 'booksindex', 'articlesindex', 'etudesindex', 'articlesCount', 'booksCountmodal', 'studiesCount', 'category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2', 'bookBanner', 'bookBanner1', 'translatorscount', 'categorycount', 'mainCounter', 'translators'));
+        return view('client.pages.index', compact('bookscount', 'articlescountmots', 'partnerscount', 'partners', 'booksindex', 'articlesindex', 'etudesindex', 'articlesCount', 'booksCountmodal', 'studiesCount', 'category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2', 'bookBanner', 'bookBanner1', 'translatorscount', 'categorycount', 'mainCounter', 'translators'));
 
     }
     public function favoris()

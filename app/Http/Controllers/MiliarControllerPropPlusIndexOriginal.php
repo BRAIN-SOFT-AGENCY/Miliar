@@ -21,7 +21,6 @@ class MiliarController extends Controller
 {
     public function index()
     {
-        // Fonction pour récupérer les 6 derniers livres d'une catégorie
         $getBooksByCategory = function ($categoryId) {
             return Book::join('category', 'books.categoryID', '=', 'category.categoryID')
                 ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
@@ -35,7 +34,7 @@ class MiliarController extends Controller
                 ->where('books.status', 0)
                 ->whereDate('books.PublierLe', '<=', now())
                 ->orderBy('books.booksID', 'desc')
-                ->take(5) // les 4 derniers
+                ->take(5) 
                 ->get();
         };
 
@@ -44,27 +43,29 @@ class MiliarController extends Controller
         $category3 = $getBooksByCategory(3);
         $category4 = $getBooksByCategory(4);
         $category6 = $getBooksByCategory(6);
-        // Récupérer les derniére 6 livres
         $bookDer = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->where('books.conversation', 1)
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
             ->orderBy('books.booksID', 'desc')
-            ->take(4)
+            ->take(5)
             ->get();
 
         $bookVue = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-            ->orderBy('books.booksID', 'desc')
-            ->where('books.categoryID', 2)
+            ->select(
+                'books.*',
+                'category.categoryName as categoryName',
+                'translator.translatorfirstName as translatorfirstName',
+                'translator.translatorlastName as translatorlastName'
+            )
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-
-            ->take(4)
+            ->orderBy('books.nbViews', 'desc')
+            ->take(5)
             ->get();
 
         $bookChoix = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -72,11 +73,11 @@ class MiliarController extends Controller
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
             ->orderBy('books.booksID', 'desc')
-            ->where('books.categoryID', 3)
+            ->where('books.selection', 1)
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
 
-            ->take(4)
+            ->take(5)
             ->get();
 
         $bookDerIndex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -97,8 +98,8 @@ class MiliarController extends Controller
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
 
-            ->skip(12)   //  ignore les 6 premiers
-            ->take(6)   //  prend les 6 suivants
+            ->skip(12)
+            ->take(6) 
             ->get();
 
         $bookBanner = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -119,31 +120,63 @@ class MiliarController extends Controller
             ->whereDate('books.PublierLe', '<=', now())
             ->where('books.isbanner', 1)
 
-            ->skip(4)   //  ignore les 6 premiers
+            ->skip(4) 
             ->take(1)->get();
         $translatorscount = Translator::where('translatorStatus', 1)->count();
         $partnerscount = partners::count();
-        $articlescountlettres = 0;
 
+        $articlescountmots = 0;
+        $countWords = static function (?string $html): int {
+            if ($html === null || $html === '') {
+                return 0;
+            }
+
+            $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $words = preg_match_all('/[\p{L}\p{N}]+(?:[\x{2019}\'-][\p{L}\p{N}]+)*/u', $text);
+
+            return $words === false ? 0 : $words;
+        };
         Book::where('status', 0)
-            ->select('booksID', 'article')
-            ->chunkById(100, function ($books) use (&$articlescountlettres) {
+            ->select('booksID', 'type', 'article', 'ResumeLivre', 'extrait', 'Titre')
+            ->chunkById(100, function ($books) use (&$articlescountmots, $countWords) {
+                $bookIds = $books->pluck('booksID');
+                $bookParts = Bookspart::whereIn('booksID', $bookIds)
+                    ->get(['booksID', 'booksPartTitre', 'bookspartResumeLivre', 'bookpartarticle'])
+                    ->groupBy('booksID');
+                $studyParts = etudespart::whereIn('booksID', $bookIds)
+                    ->get(['booksID', 'etudespartTitre', 'etudespartarticle', 'etudespartResumeLivre'])
+                    ->groupBy('booksID');
 
                 foreach ($books as $book) {
+                    foreach (['article', 'ResumeLivre', 'extrait', 'Titre'] as $field) {
+                        $articlescountmots += $countWords($book->{$field});
+                    }
 
-                    $text = strip_tags($book->article);
-                    $text = preg_replace('/[^\p{L}\p{N}]/u', '', $text);
+                    $parts = (int) $book->type === 0
+                        ? $bookParts->get($book->booksID, collect())
+                        : ((int) $book->type === 2
+                            ? $studyParts->get($book->booksID, collect())
+                            : collect());
 
-                    $articlescountlettres += mb_strlen($text, 'UTF-8');
+                    foreach ($parts as $part) {
+                        $fields = (int) $book->type === 0
+                            ? ['booksPartTitre', 'bookspartResumeLivre', 'bookpartarticle']
+                            : ['etudespartTitre', 'etudespartarticle', 'etudespartResumeLivre'];
+
+                        foreach ($fields as $field) {
+                            $articlescountmots += $countWords($part->{$field});
+                        }
+                    }
                 }
 
             }, 'booksID');
+        $articlescountmots += 6000000;
+
+
+
         $categorycount = Category::count();
         $bookscount = Book::count();
         $mainCounter = statistique::value('statistiqueBooksCount');
-        // echo print_r($articlescountmots); echo "*******";
-        // echo print_r($mainCounter);
-        // die();
 
         $translators = Translator::withCount('books')
             ->orderBy('books_count', 'desc')
@@ -208,9 +241,7 @@ class MiliarController extends Controller
             ->get();
         $partners = partners::orderBy('partnersID', 'desc')->get();
 
-        return view('web.pages.index', compact('bookscount', 'articlescountlettres', 'partnerscount', 'partners', 'booksindex', 'articlesindex', 'etudesindex', 'articlesCount', 'booksCountmodal', 'studiesCount', 'category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2', 'bookBanner', 'bookBanner1', 'translatorscount', 'categorycount', 'mainCounter', 'translators'));
-
-        //return view('web.pages.index1', compact('category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2'));
+        return view('web.pages.index', compact('bookscount', 'articlescountmots', 'partnerscount', 'partners', 'booksindex', 'articlesindex', 'etudesindex', 'articlesCount', 'booksCountmodal', 'studiesCount', 'category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2', 'bookBanner', 'bookBanner1', 'translatorscount', 'categorycount', 'mainCounter', 'translators'));
     }
     public function indexProp2()
     {
@@ -225,11 +256,10 @@ class MiliarController extends Controller
                     'translator.translatorlastName as translatorlastName'
                 )
                 ->where('books.categoryID', $categoryId)
-                ->orderBy('books.booksID', 'desc')
                 ->where('books.status', 0)
                 ->whereDate('books.PublierLe', '<=', now())
-
-                ->take(1) // les 4 derniers
+                ->orderBy('books.booksID', 'desc')
+                ->take(5) // les 4 derniers
                 ->get();
         };
 
@@ -243,23 +273,25 @@ class MiliarController extends Controller
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-            ->orderBy('books.booksID', 'desc')
+            ->where('books.conversation', 1)
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-
-            ->take(6)
+            ->orderBy('books.booksID', 'desc')
+            ->take(5)
             ->get();
 
         $bookVue = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
-
-            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
-            ->orderBy('books.booksID', 'desc')
+            ->select(
+                'books.*',
+                'category.categoryName as categoryName',
+                'translator.translatorfirstName as translatorfirstName',
+                'translator.translatorlastName as translatorlastName'
+            )
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-            ->where('books.categoryID', 2)
-
-            ->take(6)
+            ->orderBy('books.nbViews', 'desc')
+            ->take(5)
             ->get();
 
         $bookChoix = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -267,11 +299,11 @@ class MiliarController extends Controller
 
             ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
             ->orderBy('books.booksID', 'desc')
+            ->where('books.selection', 1)
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-            ->where('books.categoryID', 3)
 
-            ->take(6)
+            ->take(5)
             ->get();
 
         $bookDerIndex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -281,6 +313,7 @@ class MiliarController extends Controller
             ->orderBy('books.booksID', 'desc')
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
+
             ->take(3)
             ->get();
         $bookDerIndex2 = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
@@ -290,6 +323,7 @@ class MiliarController extends Controller
             ->orderBy('books.booksID', 'desc')
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
+
             ->skip(12)   //  ignore les 6 premiers
             ->take(6)   //  prend les 6 suivants
             ->get();
@@ -301,7 +335,7 @@ class MiliarController extends Controller
             ->orderBy('books.booksID', 'desc')
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-            ->skip(10)   //  ignore les 6 premiers
+            ->where('books.isbanner', 1)
             ->take(4)->get();
         $bookBanner1 = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
@@ -310,9 +344,382 @@ class MiliarController extends Controller
             ->orderBy('books.booksID', 'desc')
             ->where('books.status', 0)
             ->whereDate('books.PublierLe', '<=', now())
-            ->skip(14)   //  ignore les 6 premiers
+            ->where('books.isbanner', 1)
+
+            ->skip(4)   //  ignore les 6 premiers
             ->take(1)->get();
-        return view('web.pages.indexProp2', compact('category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2', 'bookBanner', 'bookBanner1'));
+        $translatorscount = Translator::where('translatorStatus', 1)->count();
+        $partnerscount = partners::count();
+
+        // calcul de nbre de mots
+        $articlescountmots = 0;
+        $artcilescountlettre = 0;
+        $countWords = static function (?string $html): int {
+            if ($html === null || $html === '') {
+                return 0;
+            }
+
+            $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $words = preg_match_all('/[\p{L}\p{N}]+(?:[\x{2019}\'-][\p{L}\p{N}]+)*/u', $text);
+
+            return $words === false ? 0 : $words;
+        };
+        $countLetters = static function (?string $html): int {
+            if ($html === null || $html === '') {
+                return 0;
+            }
+
+            $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $letters = preg_match_all('/\p{L}/u', $text);
+
+            return $letters === false ? 0 : $letters;
+        };
+
+        Book::where('status', 0)
+            ->select('booksID', 'type', 'article', 'ResumeLivre', 'extrait', 'Titre')
+            ->chunkById(100, function ($books) use (&$articlescountmots, &$artcilescountlettre, $countWords, $countLetters) {
+                $bookIds = $books->pluck('booksID');
+                $bookParts = Bookspart::whereIn('booksID', $bookIds)
+                    ->get(['booksID', 'booksPartTitre', 'bookspartResumeLivre', 'bookpartarticle'])
+                    ->groupBy('booksID');
+                $studyParts = etudespart::whereIn('booksID', $bookIds)
+                    ->get(['booksID', 'etudespartTitre', 'etudespartarticle', 'etudespartResumeLivre'])
+                    ->groupBy('booksID');
+
+                foreach ($books as $book) {
+                    foreach (['article', 'ResumeLivre', 'extrait', 'Titre'] as $field) {
+                        $articlescountmots += $countWords($book->{$field});
+                        $artcilescountlettre += $countLetters($book->{$field});
+                    }
+
+                    $parts = (int) $book->type === 0
+                        ? $bookParts->get($book->booksID, collect())
+                        : ((int) $book->type === 2
+                            ? $studyParts->get($book->booksID, collect())
+                            : collect());
+
+                    foreach ($parts as $part) {
+                        $fields = (int) $book->type === 0
+                            ? ['booksPartTitre', 'bookspartResumeLivre', 'bookpartarticle']
+                            : ['etudespartTitre', 'etudespartarticle', 'etudespartResumeLivre'];
+
+                        foreach ($fields as $field) {
+                            $articlescountmots += $countWords($part->{$field});
+                            $artcilescountlettre += $countLetters($part->{$field});
+                        }
+                    }
+                }
+
+            }, 'booksID');
+
+        //  echo $articlescountmots;die();
+
+
+
+        $categorycount = Category::count();
+        $bookscount = Book::count();
+        $mainCounter = statistique::value('statistiqueBooksCount');
+
+        $translators = Translator::withCount('books')
+            ->orderBy('books_count', 'desc')
+            ->get();
+
+
+        $articlesCount = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 0)
+            ->count();
+        $booksCountmodal = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 1)
+            ->count();
+        $studiesCount = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 2)
+            ->count();
+
+
+        $booksindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 1)
+            ->take(2)
+            ->get();
+        $articlesindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 0)
+            ->take(2)
+            ->get();
+        $etudesindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 2)
+            ->take(2)
+            ->get();
+        $partners = partners::orderBy('partnersID', 'desc')->get();
+
+        return view('web.pages.indexProp2', compact('bookscount', 'articlescountmots', 'artcilescountlettre', 'partnerscount', 'partners', 'booksindex', 'articlesindex', 'etudesindex', 'articlesCount', 'booksCountmodal', 'studiesCount', 'category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2', 'bookBanner', 'bookBanner1', 'translatorscount', 'categorycount', 'mainCounter', 'translators'));
+    }
+
+    public function indexPropPlus()
+    {
+        // Fonction pour récupérer les 6 derniers livres d'une catégorie
+        $getBooksByCategory = function ($categoryId) {
+            return Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+                ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+                ->select(
+                    'books.*',
+                    'category.categoryName as categoryName',
+                    'translator.translatorfirstName as translatorfirstName',
+                    'translator.translatorlastName as translatorlastName'
+                )
+                ->where('books.categoryID', $categoryId)
+                ->where('books.status', 0)
+                ->whereDate('books.PublierLe', '<=', now())
+                ->orderBy('books.booksID', 'desc')
+                ->take(5) // les 4 derniers
+                ->get();
+        };
+
+        $category1 = $getBooksByCategory(1);
+        $category2 = $getBooksByCategory(2);
+        $category3 = $getBooksByCategory(3);
+        $category4 = $getBooksByCategory(4);
+        $category6 = $getBooksByCategory(6);
+        // Récupérer les derniére 6 livres
+        $bookDer = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->where('books.conversation', 1)
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->orderBy('books.booksID', 'desc')
+            ->take(5)
+            ->get();
+
+        $bookVue = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+            ->select(
+                'books.*',
+                'category.categoryName as categoryName',
+                'translator.translatorfirstName as translatorfirstName',
+                'translator.translatorlastName as translatorlastName'
+            )
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->orderBy('books.nbViews', 'desc')
+            ->take(8)
+            ->get();
+
+        $bookChoix = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            //->where('books.selection', 1)
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->whereIn('books.categoryID', [1, 2, 3, 2000022])
+            ->whereRaw(
+                '(SELECT COUNT(*) FROM books AS newer_books
+                    WHERE newer_books.categoryID = books.categoryID
+                    AND newer_books.booksID > books.booksID
+                    AND newer_books.status = 0
+                    AND newer_books.PublierLe <= ?) < 2',
+                [now()]
+            )
+            ->orderBy('books.booksID', 'desc')
+            ->take(8)
+            ->get();
+
+        $bookDerIndex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+
+            ->take(3)
+            ->get();
+        $bookDerIndex2 = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+
+            ->skip(12)   //  ignore les 6 premiers
+            ->take(6)   //  prend les 6 suivants
+            ->get();
+
+        $bookBanner = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.isbanner', 1)
+            ->take(4)->get();
+        $bookBanner1 = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.isbanner', 1)
+
+            ->skip(4)   //  ignore les 6 premiers
+            ->take(1)->get();
+        $translatorscount = Translator::where('translatorStatus', 1)->count();
+        $partnerscount = partners::count();
+
+        // calcul de nbre de mots
+        $articlescountmots = 0;
+        $countWords = static function (?string $html): int {
+            if ($html === null || $html === '') {
+                return 0;
+            }
+
+            $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $words = preg_match_all('/[\p{L}\p{N}]+(?:[\x{2019}\'-][\p{L}\p{N}]+)*/u', $text);
+
+            return $words === false ? 0 : $words;
+        };
+        Book::where('status', 0)
+            ->select('booksID', 'type', 'article', 'ResumeLivre', 'extrait', 'Titre')
+            ->chunkById(100, function ($books) use (&$articlescountmots, $countWords) {
+                $bookIds = $books->pluck('booksID');
+                $bookParts = Bookspart::whereIn('booksID', $bookIds)
+                    ->get(['booksID', 'booksPartTitre', 'bookspartResumeLivre', 'bookpartarticle'])
+                    ->groupBy('booksID');
+                $studyParts = etudespart::whereIn('booksID', $bookIds)
+                    ->get(['booksID', 'etudespartTitre', 'etudespartarticle', 'etudespartResumeLivre'])
+                    ->groupBy('booksID');
+
+                foreach ($books as $book) {
+                    foreach (['article', 'ResumeLivre', 'extrait', 'Titre'] as $field) {
+                        $articlescountmots += $countWords($book->{$field});
+                    }
+
+                    $parts = (int) $book->type === 0
+                        ? $bookParts->get($book->booksID, collect())
+                        : ((int) $book->type === 2
+                            ? $studyParts->get($book->booksID, collect())
+                            : collect());
+
+                    foreach ($parts as $part) {
+                        $fields = (int) $book->type === 0
+                            ? ['booksPartTitre', 'bookspartResumeLivre', 'bookpartarticle']
+                            : ['etudespartTitre', 'etudespartarticle', 'etudespartResumeLivre'];
+
+                        foreach ($fields as $field) {
+                            $articlescountmots += $countWords($part->{$field});
+                        }
+                    }
+                }
+
+            }, 'booksID');
+        $articlescountmots += 6000000;
+        //  echo $articlescountmots;die();
+
+
+
+        $categorycount = Category::count();
+        $bookscount = Book::count();
+        $mainCounter = statistique::value('statistiqueBooksCount');
+
+        $translators = Translator::withCount('books')
+            ->orderBy('books_count', 'desc')
+            ->get();
+
+
+        $articlesCount = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 0)
+            ->count();
+        $booksCountmodal = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 1)
+            ->count();
+        $studiesCount = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 2)
+            ->count();
+
+
+        $booksindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 1)
+            ->take(2)
+            ->get();
+        $articlesindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 0)
+            ->take(2)
+            ->get();
+        $etudesindex = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
+            ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
+
+            ->select('books.*', 'category.categoryName as categoryName', 'translator.translatorfirstName as translatorfirstName', 'translator.translatorlastName as translatorlastName')
+            ->orderBy('books.booksID', 'desc')
+            ->where('books.status', 0)
+            ->whereDate('books.PublierLe', '<=', now())
+            ->where('books.type', 2)
+            ->take(2)
+            ->get();
+        $partners = partners::orderBy('partnersID', 'desc')->get();
+        //echo 'hiii';die();
+        return view('web.pages.indexPropPlus', compact('bookscount', 'articlescountmots', 'partnerscount', 'partners', 'booksindex', 'articlesindex', 'etudesindex', 'articlesCount', 'booksCountmodal', 'studiesCount', 'category1', 'category2', 'category3', 'category4', 'category6', 'bookDer', 'bookVue', 'bookChoix', 'bookDerIndex', 'bookDerIndex2', 'bookBanner', 'bookBanner1', 'translatorscount', 'categorycount', 'mainCounter', 'translators'));
 
     }
 
@@ -510,7 +917,7 @@ class MiliarController extends Controller
                ->paginate($perPage)
                ->appends($request->all());
 
-           $categories = Category::where('parent', 0)->get();
+           $categories = Category::where('parent', 0)->where('isActive', 1)->get();
 
            $translators = Translator::all();
 
@@ -815,10 +1222,7 @@ class MiliarController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $categories = Category::where(
-            'parent',
-            0
-        )->get();
+        $categories = Category::where('parent', 0)->where('isActive', 1)->get();
 
 
         /*
@@ -999,7 +1403,7 @@ class MiliarController extends Controller
             ->paginate($perPage)
             ->appends($request->all());
 
-        $categories = Category::where('parent', 0)->get();
+        $categories = Category::where('parent', 0)->where('isActive', 1)->get();
 
         $translators = Translator::all();
 
@@ -1041,6 +1445,8 @@ class MiliarController extends Controller
 
     public function booksDetails($id)
     {
+        //Added By AYMAN
+        Book::where('booksID', $id)->increment('nbViews');
         // Récupérer le livre correspondant à l'ID
         $book = Book::join('category', 'books.categoryID', '=', 'category.categoryID')
             ->join('translator', 'books.translatorID', '=', 'translator.translatorID')
